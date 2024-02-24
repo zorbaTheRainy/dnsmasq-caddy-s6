@@ -43,6 +43,7 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:${{ steps.release.outputs.GH_TAG }}
           ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:latest
         build-args: |
           BUILD_TIME=${{ steps.date.outputs.BUILD_TIME }}
