@@ -21,7 +21,7 @@ jobs:
 
     - name: Get release tag
       id: release
-      run: 
+      run: |
         buildTag=$(date +%Y-%m-%d-%H-%M)
         echo "GH_TAG=$buildTag" >> $GITHUB_OUTPUT
 
