@@ -3,7 +3,7 @@ FROM alpine
 ARG BUILD_TIME
 ARG TARGETARCH
 ARG WEBPROC_VERSION=0.4.0
-#ENV WEBPROC_VERSION 0.2.2
+
 ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
 ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
 ENV WEBPROC_URL_ARM32 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
@@ -15,7 +15,6 @@ LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 
 
 # webproc release settings
-
 COPY dnsmasq.conf /etc/dnsmasq.conf
 # fetch dnsmasq and webproc binary
 RUN apk update \
@@ -37,4 +36,5 @@ RUN echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
 
 EXPOSE 53/udp 8080
 
+# launch webproc, which in turn launches dnsmasq
 ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
