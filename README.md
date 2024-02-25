@@ -3,13 +3,15 @@
 dnsmasq in a docker container, configurable via a [simple web UI](https://github.com/jpillora/webproc)
 
 
-# Forked
+## Forked
 
 This is a fork of [jpillora's dnsmasq](https://github.com/jpillora/docker-dnsmasq).
 
-I just wanted a verison of it for ARM.  His is only for AMD64.
+I just wanted a verison of it for ARM.  His is only for AMD64 ([Docker Hub](https://hub.docker.com/r/jpillora/dnsmasq)).
 
 I also updated webproc to 0.4.0.
+
+[Docker Hub](https://hub.docker.com/r/zorbatherainy/dnsmasq) & [GitHub](https://github.com/zorbaTheRainy/docker-dnsmasq)
 
 
 ### Usage
