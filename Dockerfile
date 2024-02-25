@@ -17,6 +17,7 @@ LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 # webproc release settings
 COPY dnsmasq.conf /etc/dnsmasq.conf
 # fetch dnsmasq and webproc binary
+# for some reason "arm/v7" has the TARGETARCH of just "arm", whereas "arm64" has the TARGETARCH of "arm64"
 RUN apk update \
 	&& apk --no-cache add dnsmasq \
 	&& apk add --no-cache --virtual .build-deps curl \
