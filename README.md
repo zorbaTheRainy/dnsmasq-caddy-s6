@@ -7,16 +7,16 @@ dnsmasq in a docker container, configurable via a [simple web UI](https://github
 
 This is a fork of [jpillora's dnsmasq](https://github.com/jpillora/docker-dnsmasq).
 
-I just wanted a verison of it for ARM.  His is only for AMD64 ([Docker Hub](https://hub.docker.com/r/jpillora/dnsmasq)).
+I just wanted a version of it for ARM.  His is only for AMD64 ([Docker Hub](https://hub.docker.com/r/jpillora/dnsmasq)).
 
 I also updated webproc to 0.4.0.
 
-[Docker Hub](https://hub.docker.com/r/zorbatherainy/dnsmasq) & [GitHub](https://github.com/zorbaTheRainy/docker-dnsmasq)
+My: [Docker Hub](https://hub.docker.com/r/zorbatherainy/dnsmasq) & [GitHub](https://github.com/zorbaTheRainy/docker-dnsmasq)
 
 
 ### Usage
 
-1. Create a [`/opt/dnsmasq.conf`](http://oss.segetech.com/intra/srv/dnsmasq.conf) file on the Docker host
+1. Create a [`/etc/dnsmasq.conf`](http://oss.segetech.com/intra/srv/dnsmasq.conf) file on the Docker host
 
    ```ini
    #dnsmasq config, for a complete example, see:
@@ -43,7 +43,7 @@ I also updated webproc to 0.4.0.
    	-d \
    	-p 53:53/udp \
    	-p 5380:8080 \
-   	-v /opt/dnsmasq.conf:/etc/dnsmasq.conf \
+   	-v /docker/dnsmasq.conf:/etc/dnsmasq.conf \
    	--log-opt "max-size=100m" \
    	-e "HTTP_USER=foo" \
    	-e "HTTP_PASS=bar" \
