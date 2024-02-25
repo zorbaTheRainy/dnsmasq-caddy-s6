@@ -22,7 +22,11 @@ RUN apk update \
 	&& apk --no-cache add dnsmasq \
 	&& apk add --no-cache --virtual .build-deps curl \
 	&& echo "$WEBPROC_URL" \
-	&& curl -sL $WEBPROC_URL | gzip -d - > /usr/local/bin/webproc  \
+	&& if [ "$TARGETARCH" = "arm/v7" ]; then \
+curl -sL $WEBPROC_URL_ARM32 | gzip -d - > /usr/local/bin/webproc  \
+else \
+curl -sL $WEBPROC_URL | gzip -d - > /usr/local/bin/webproc  \
+fi \
 	&& chmod +x /usr/local/bin/webproc \
 	&& apk del .build-deps 
 
