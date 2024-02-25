@@ -2,8 +2,15 @@
 
 dnsmasq in a docker container, configurable via a [simple web UI](https://github.com/jpillora/webproc)
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/jpillora/dnsmasq.svg)][dockerhub]
-[![Image Size](https://images.microbadger.com/badges/image/jpillora/dnsmasq.svg)][dockerhub]
+
+# Forked
+
+This is a fork of [jpillora's dnsmasq](https://github.com/jpillora/docker-dnsmasq).
+
+I just wanted a verison of it for ARM.  His is only for AMD64.
+
+I also updated webproc to 0.4.0.
+
 
 ### Usage
 
@@ -39,7 +46,35 @@ dnsmasq in a docker container, configurable via a [simple web UI](https://github
    	-e "HTTP_USER=foo" \
    	-e "HTTP_PASS=bar" \
    	--restart always \
-   	jpillora/dnsmasq
+   	zorbatherainy/dnsmasq
+   ```
+
+   or
+   
+```
+version: '2.4'
+
+services:
+  dnsmasq:
+    image: zorbatherainy/dnsmasq
+    container_name: dnsmasq    
+    hostname: dnsmasq
+    volumes:
+      - /docker/dnsmasq//dnsmasq.conf:/etc/dnsmasq.conf
+      - /etc/localtime:/etc/localtime:ro
+    # environment:
+     #  HTTP_USER: foo
+     #  HTTP_PASS: bar
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    ports:
+      - 53:53/udp
+      - 5380:8080
+    logging:
+      options:
+        max-size: "2048m"
+    restart: always
    ```
 
 1. Visit `http://<docker-host>:5380`, authenticate with `foo/bar` and you should see
@@ -60,6 +95,7 @@ dnsmasq in a docker container, configurable via a [simple web UI](https://github
 
 #### MIT License
 
+Copyright &copy; 2024 ZorbaTheRainy
 Copyright &copy; 2018 Jaime Pillora &lt;dev@jpillora.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -81,4 +117,4 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-[dockerhub]: https://hub.docker.com/r/jpillora/dnsmasq/
+[dockerhub]: https://hub.docker.com/r/zorbatherainy/dnsmasq/
