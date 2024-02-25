@@ -21,9 +21,9 @@ COPY dnsmasq.conf /etc/dnsmasq.conf
 RUN apk update \
 	&& apk --no-cache add dnsmasq \
 	&& apk add --no-cache --virtual .build-deps curl \
-	&& echo "$WEBPROC_URL" \
-	&& echo "$TARGETARCH" \
-	&& if [ "$TARGETARCH" = "arm/v7" ]; then \
+	&& echo "WEBPROC_URL: ${WEBPROC_URL}" \
+	&& echo "TARGETARCH:  ${TARGETARCH}" \
+	&& if [ "$TARGETARCH" = "arm" ]; then \
 curl -sL $WEBPROC_URL_ARM32 | gzip -d - > /usr/local/bin/webproc  ; \
 else \
 curl -sL $WEBPROC_URL | gzip -d - > /usr/local/bin/webproc  ; \
