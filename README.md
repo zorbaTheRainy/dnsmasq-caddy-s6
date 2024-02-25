@@ -51,31 +51,31 @@ I also updated webproc to 0.4.0.
 
    or
    
-```
-version: '2.4'
-
-services:
-  dnsmasq:
-    image: zorbatherainy/dnsmasq
-    container_name: dnsmasq    
-    hostname: dnsmasq
-    volumes:
-      - /docker/dnsmasq//dnsmasq.conf:/etc/dnsmasq.conf
-      - /etc/localtime:/etc/localtime:ro
-    # environment:
-     #  HTTP_USER: foo
-     #  HTTP_PASS: bar
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    ports:
-      - 53:53/udp
-      - 5380:8080
-    logging:
-      options:
-        max-size: "2048m"
-    restart: always
    ```
+   version: '2.4'
+   
+   services:
+     dnsmasq:
+       image: zorbatherainy/dnsmasq
+       container_name: dnsmasq    
+       hostname: dnsmasq
+       volumes:
+         - /docker/dnsmasq//dnsmasq.conf:/etc/dnsmasq.conf
+         - /etc/localtime:/etc/localtime:ro
+       # environment:
+        #  HTTP_USER: foo
+        #  HTTP_PASS: bar
+       cap_add:
+         - NET_ADMIN
+         - NET_RAW
+       ports:
+         - 53:53/udp
+         - 5380:8080
+       logging:
+         options:
+           max-size: "2048m"
+       restart: always
+      ```
 
 1. Visit `http://<docker-host>:5380`, authenticate with `foo/bar` and you should see
 
@@ -96,6 +96,7 @@ services:
 #### MIT License
 
 Copyright &copy; 2024 ZorbaTheRainy
+
 Copyright &copy; 2018 Jaime Pillora &lt;dev@jpillora.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
