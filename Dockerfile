@@ -8,13 +8,13 @@ ARG TARGETVARIANT
 ARG BUILD_TIME # passed via GitHub Action
 ARG WEBPROC_VERSION=0.4.0
 
+# Use the argument in the FROM instruction
+FROM ${BASE_IMAGE}
+
 ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
 ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
 ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
 ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
-
-# Use the argument in the FROM instruction
-FROM ${BASE_IMAGE}
 
 LABEL build_image=${BASE_IMAGE}
 LABEL is_s6=${IS_S6}
