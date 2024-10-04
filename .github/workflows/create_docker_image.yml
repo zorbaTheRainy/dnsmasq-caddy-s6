@@ -2,7 +2,16 @@ name: Docker Image CI
 
 on:
   workflow_dispatch:
-
+    inputs:
+      base_image:
+        description: 'Base image to use for the Docker build'
+        required: true
+        default: 'alpine'
+      caddy_version:
+        description: 'Version of Caddy to build from (will always be alpine)'
+        required: true
+        default: '2.8.2'
+  
 jobs:
   build:
 
