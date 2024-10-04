@@ -78,3 +78,5 @@ jobs:
           BASE_IMAGE=${{ steps.tag.outputs.BASE_IMAGE }}
           IS_S6=${{ steps.tag.outputs.IS_S6 }}
           BUILD_TIME=${{ steps.date.outputs.BUILD_TIME }}
+          BASE_IMAGE_TMP=${{ steps.tag.outputs.BASE_IMAGE }}
+          IS_S6_TMP=${{ steps.tag.outputs.IS_S6 }}

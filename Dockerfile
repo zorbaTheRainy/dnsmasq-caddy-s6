@@ -1,5 +1,5 @@
 # Define the build argument
-ARG BASE_IMAGE # =alpine:latest
+ARG BASE_IMAGE=alpine:latest
 
 # Use the argument in the FROM instruction
 FROM ${BASE_IMAGE}
@@ -9,19 +9,16 @@ ARG TARGETVARIANT
 
 ARG BUILD_TIME # passed via GitHub Action
 ARG WEBPROC_VERSION=0.4.0
-ARG IS_S6 # passed via GitHub Action
+ARG IS_S6=false # passed via GitHub Action
+ARG BASE_IMAGE_TMP  # passed via GitHub Action
 
 ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
 ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
 ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
 ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
 
-# Set environment variables to use in LABEL
-ENV BASE_IMAGE_ENV=${BASE_IMAGE}
-ENV IS_S6_ENV=${IS_S6}
-
-LABEL build_image=${BASE_IMAGE_ENV}
-LABEL is_s6=${IS_S6_ENV}
+LABEL build_image=${BASE_IMAGE_TMP}
+LABEL is_s6=${IS_S6}
 LABEL release-date=${BUILD_TIME}
 LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
