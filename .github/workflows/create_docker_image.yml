@@ -34,15 +34,17 @@ jobs:
     - name: Set BASE_IMAGE and GH_TAG
       id: tag
       run: |
+        echo "IS_S6=false" >> $GITHUB_OUTPUT
         if [ "${{ github.event.inputs.base_image }}" == "alpine" ]; then
-          echo "BASE_IMAGE=alpine:latest" >> $GITHUB_ENV
+          echo "BASE_IMAGE=alpine:latest" >> $GITHUB_OUTPUT
           buildTag=$(date +%Y-%m-%d-%H-%M)
           echo "GH_TAG=$buildTag" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.base_image }}" == "caddy" ]; then
-            echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_ENV
+            echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_OUTPUT
             echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.base_image }}" == "caddy-s6" ]; then
-          echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_ENV
+          echo "IS_S6=true" >> $GITHUB_OUTPUT
+          echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_OUTPUT
           echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}-s6" >> $GITHUB_OUTPUT
         else
           echo "Invalid base image specified" >&2
@@ -72,4 +74,6 @@ jobs:
           ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:${{ steps.tag.outputs.GH_TAG }}
           ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:latest
         build-args: |
+          BASE_IMAGE=${{ steps.tag.outputs.BASE_IMAGE }}
+          IS_S6=${{ steps.tag.outputs.IS_S6 }}
           BUILD_TIME=${{ steps.date.outputs.BUILD_TIME }}

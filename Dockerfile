@@ -1,13 +1,11 @@
 # Define the build argument
 ARG BASE_IMAGE=alpine:latest
-
-# Use the argument in the FROM instruction
-FROM ${BASE_IMAGE}
+ARG IS_S6=false
 
 ARG TARGETARCH
 ARG TARGETVARIANT
 
-ARG BUILD_TIME
+ARG BUILD_TIME # passed via GitHub Action
 ARG WEBPROC_VERSION=0.4.0
 
 ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
@@ -15,9 +13,14 @@ ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WE
 ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
 ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
 
-LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
+# Use the argument in the FROM instruction
+FROM ${BASE_IMAGE}
+
+LABEL build_image=${BASE_IMAGE}
+LABEL is_s6=${IS_S6}
 LABEL release-date=${BUILD_TIME}
 LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
+LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
 
 
 # webproc release settings
