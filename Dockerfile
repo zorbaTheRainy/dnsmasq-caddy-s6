@@ -8,9 +8,12 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 
 ARG BUILD_TIME # passed via GitHub Action
-ARG WEBPROC_VERSION=0.4.0
 ARG IS_S6=false # passed via GitHub Action
 ARG BASE_IMAGE_TMP  # passed via GitHub Action
+
+ARG WEBPROC_VERSION=0.4.0
+ARG S6_OVERLAY_VERSION=3.2.0.0
+
 
 ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
 ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
@@ -47,6 +50,18 @@ RUN apk update && \
 	apk del .build-deps && \
     mkdir -p /etc/default/ && \
     echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
+
+# Conditionally add s6 overlay
+RUN if [ "$is_s6" = "true" ]; then \
+        apt-get update && apt-get install -y \
+        curl \
+        xz-utils \
+        ; \
+        curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz && \
+        curl -L -o /tmp/s6-overlay-x86_64.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz && \
+        tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+        tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz; \
+    fi
 
 EXPOSE 53/udp 8080
 
