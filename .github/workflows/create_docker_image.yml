@@ -6,7 +6,11 @@ on:
       base_image:
         description: 'Base image to use for the Docker build'
         required: true
-        default: 'alpine'
+        type: choice
+        options:
+          - alpine
+          - caddy
+          - caddy-s6
       caddy_version:
         description: 'Version of Caddy to build from (will always be alpine)'
         required: true
