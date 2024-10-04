@@ -16,8 +16,12 @@ ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WE
 ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
 ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
 
-LABEL build_image=${BASE_IMAGE}
-LABEL is_s6=${IS_S6}
+# Set environment variables to use in LABEL
+ENV BASE_IMAGE_ENV=${BASE_IMAGE}
+ENV IS_S6_ENV=${IS_S6}
+
+LABEL build_image=${BASE_IMAGE_ENV}
+LABEL is_s6=${IS_S6_ENV}
 LABEL release-date=${BUILD_TIME}
 LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
