@@ -1,5 +1,5 @@
 # Define the build argument
-ARG BASE_IMAGE=alpine:latest
+ARG BASE_IMAGE # =alpine:latest
 
 # Use the argument in the FROM instruction
 FROM ${BASE_IMAGE}
