@@ -20,8 +20,10 @@ ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WE
 ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
 ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
 
-LABEL build_image=${BASE_IMAGE_TMP}
-LABEL is_s6=${IS_S6}
+LABEL BASE_IMAGE=${BASE_IMAGE_TMP}
+LABEL IS_S6=${IS_S6}
+LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
+LABEL S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION}
 LABEL release-date=${BUILD_TIME}
 LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
@@ -58,12 +60,14 @@ RUN if [ "$is_s6" = "true" ]; then \
         xz-utils \
         ; \
         curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz && \
-        curl -L -o /tmp/s6-overlay-x86_64.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz && \
+        curl -L -o /tmp/s6-overlay-x86_64.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-${TARGETARCH}.tar.xz && \
         tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-        tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz; \
+        tar -C / -Jxpf /tmp/s6-overlay-${TARGETARCH}.tar.xz &&  \
+        rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-${TARGETARCH}.tar.xz
     fi
 
 EXPOSE 53/udp 8080
 
 # launch webproc, which in turn launches dnsmasq
-ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
+# ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
+ENTRYPOINT ["/init"]

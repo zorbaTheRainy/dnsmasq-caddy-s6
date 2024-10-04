@@ -15,7 +15,11 @@ on:
         description: 'Version of Caddy to build from (will always be alpine)'
         required: true
         default: '2.8.1'
-  
+      s6_version:
+        description: 'Version of S6-Overlay to include in the build'
+        required: true
+        default: '3.2.0.0'
+            
 jobs:
   build:
 
@@ -77,5 +81,6 @@ jobs:
         build-args: |
           BASE_IMAGE=${{ steps.tag.outputs.BASE_IMAGE }}
           IS_S6=${{ steps.tag.outputs.IS_S6 }}
+          S6_OVERLAY_VERSION=${{ github.event.inputs.s6_version }}
           BUILD_TIME=${{ steps.date.outputs.BUILD_TIME }}
           BASE_IMAGE_TMP=${{ steps.tag.outputs.BASE_IMAGE }} # put her to get around an issue with LABEL in the Dockerfile
