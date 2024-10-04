@@ -40,10 +40,10 @@ jobs:
           echo "GH_TAG=$buildTag" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.base_image }}" == "caddy" ]; then
             echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_ENV
-            echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}" >> $GITHUB_ENV
+            echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.base_image }}" == "caddy-s6" ]; then
           echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_ENV
-          echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}-s6" >> $GITHUB_ENV
+          echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}-s6" >> $GITHUB_OUTPUT
         else
           echo "Invalid base image specified" >&2
           exit 1
