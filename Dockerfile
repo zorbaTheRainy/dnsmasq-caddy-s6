@@ -2,14 +2,14 @@
 ARG BASE_IMAGE=alpine:latest
 ARG IS_S6=false
 
+# Use the argument in the FROM instruction
+FROM ${BASE_IMAGE}
+
 ARG TARGETARCH
 ARG TARGETVARIANT
 
 ARG BUILD_TIME # passed via GitHub Action
 ARG WEBPROC_VERSION=0.4.0
-
-# Use the argument in the FROM instruction
-FROM ${BASE_IMAGE}
 
 ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
 ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
