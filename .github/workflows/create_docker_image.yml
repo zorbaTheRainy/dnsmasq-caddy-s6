@@ -14,7 +14,7 @@ on:
       caddy_version:
         description: 'Version of Caddy to build from (will always be alpine)'
         required: true
-        default: '2.8.2'
+        default: '2.8.1'
   
 jobs:
   build:
@@ -69,7 +69,8 @@ jobs:
       with:
         context: .
         push: true
-        platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
+        platforms: linux/amd64
+        # platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:${{ steps.tag.outputs.GH_TAG }}
           ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:latest
