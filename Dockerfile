@@ -36,6 +36,7 @@ LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
 
 # webproc release settings
 COPY dnsmasq.conf /etc/dnsmasq.conf
+COPY keep_alive.sh /etc/keep_alive.sh
 COPY start.sh /etc/start.sh
 # fetch dnsmasq and webproc binary
 RUN apk update && \
@@ -90,5 +91,7 @@ RUN if [ "$is_s6" = "true" ]; then \
 EXPOSE 53/udp 8080
 
 # Run the desired programs
-CMD ["/etc/start.sh"]  # runs dnsmasq/webproc and caddy (if it is installed)
-# ENTRYPOINT ["/init"] # runs S6
+  # runs dnsmasq/webproc and caddy (if it is installed)
+CMD ["/etc/keep_alive.sh"]
+  # runs S6
+ # ENTRYPOINT ["/init"]
