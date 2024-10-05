@@ -59,26 +59,29 @@ RUN apk update && \
     echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
 
 # Conditionally add s6 overlay
+# Conditionally add s6 overlay
 RUN if [ "$is_s6" = "true" ]; then \
         apk update && \
         apk add --no-cache curl xz-utils && \
         curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz && \
         case "${TARGETARCH}" in \
             amd64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_AMD64 ;; \
-            arm64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \ 
+            arm64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \
             arm) \
                 case "${TARGETVARIANT}" in \
-                    v6)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv6   ;; \
-                    v7)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv7   ;; \
-                    v8)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64   ;; \
+                    v6)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv6 ;; \
+                    v7)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv7 ;; \
+                    v8)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \
                     *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
-                esac;  ;; \
+                esac ;; \
             *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
-        esac  && \
+        esac && \
         tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-        tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz &&  \
-        rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz \
+        tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
+        rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz && \
+        touch /app/s6_installed.txt \
     fi
+
 
 EXPOSE 53/udp 8080
 
