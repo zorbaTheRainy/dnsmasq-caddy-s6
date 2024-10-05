@@ -34,10 +34,12 @@ LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
 
 
-# webproc release settings
-COPY dnsmasq.conf /etc/dnsmasq.conf
+# copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY keep_alive.sh /etc/keep_alive.sh
 COPY start.sh /etc/start.sh
+
+# webproc release settings
+COPY dnsmasq.conf /etc/dnsmasq.conf
 # fetch dnsmasq and webproc binary
 RUN apk update && \
 	apk --no-cache add dnsmasq && \
