@@ -92,6 +92,6 @@ EXPOSE 53/udp 8080
 
 # Run the desired programs
   # runs dnsmasq/webproc and caddy (if it is installed)
-CMD ["/etc/keep_alive.sh"]
+CMD ["/etc/start.sh"]
   # runs S6
  # ENTRYPOINT ["/init"]
