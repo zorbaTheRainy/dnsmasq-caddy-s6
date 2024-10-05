@@ -59,7 +59,6 @@ RUN apk update && \
     echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
 
 # Conditionally add s6 overlay
-# Conditionally add s6 overlay
 RUN if [ "$is_s6" = "true" ]; then \
         apk update && \
         apk add --no-cache curl xz-utils && \
@@ -79,7 +78,7 @@ RUN if [ "$is_s6" = "true" ]; then \
         tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
         tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
         rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz && \
-        touch /app/s6_installed.txt \
+        touch /app/s6_installed.txt ; \
     fi
 
 
