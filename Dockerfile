@@ -81,6 +81,9 @@ RUN if [ "$is_s6" = "true" ]; then \
         mkdir /init \
         touch /app/s6_installed.txt \
         ; \
+    else
+        mkdir /init \
+        ; \
     fi
 
 
@@ -88,4 +91,4 @@ EXPOSE 53/udp 8080
 
 # Run the desired programs
 CMD ["/app/start.sh"]  # runs dnsmasq/webproc and caddy (if it is installed)
-ENTRYPOINT ["/init"] # runs S6
+# ENTRYPOINT ["/init"] # runs S6
