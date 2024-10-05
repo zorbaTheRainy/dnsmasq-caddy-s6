@@ -5,7 +5,7 @@
     # Tailscale Docker Mod ->  https://github.com/tailscale-dev/docker-mod
 ARG BASE_IMAGE=alpine:latest
 # FROM ${BASE_IMAGE}
-FROM ghcr.io/linuxserver/baseimage-alpine:3.11
+FROM ghcr.io/linuxserver/baseimage-alpine:3.20
 
 # inherent in the build system
 ARG TARGETARCH
@@ -34,6 +34,7 @@ LABEL maintainer="ZorbaTheRainy"
 # copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY keep_alive.sh /etc/keep_alive.sh
 COPY start.sh /etc/start.sh
+COPY dnsmasq_run.sh /etc/dnsmasq_run.sh
 
 # webproc release settings
 COPY dnsmasq.conf /etc/dnsmasq.conf
@@ -56,7 +57,9 @@ RUN apk update && \
 	chmod +x /usr/local/bin/webproc && \
 	apk del .build-deps && \
     mkdir -p /etc/default/ && \
-    echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq
+    echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
+    mkdir -p /etc/services.d/dnsmasq && \
+    cp /etc/dnsmasq_run.sh /etc/services.d/dnsmasq/run
 
 
 
