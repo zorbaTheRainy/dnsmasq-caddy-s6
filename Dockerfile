@@ -81,7 +81,7 @@ RUN if [ "$is_s6" = "true" ]; then \
         mkdir /init \
         touch /app/s6_installed.txt \
         ; \
-    else
+    else \
         mkdir /init \
         ; \
     fi
