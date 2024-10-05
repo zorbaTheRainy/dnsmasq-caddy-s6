@@ -94,4 +94,5 @@ EXPOSE 53/udp 8080
 
 # Run the desired programs
   # runs dnsmasq/webproc and caddy (if it is installed)
-CMD ["/etc/start.sh"]
+# CMD ["/etc/start.sh"]
+ENTRYPOINT ["/init"]
