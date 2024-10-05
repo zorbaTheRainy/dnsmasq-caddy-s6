@@ -61,11 +61,11 @@ RUN apk update && \
 # Conditionally add s6 overlay
 RUN if [ "$is_s6" = "true" ]; then \
         apk update && \
-        apk add --no-cache curl xz-utils && \
+        apk add --no-cache curl xz-utils  \
         curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz && \
         case "${TARGETARCH}" in \
             amd64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_AMD64 ;; \
-            arm64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \   ;; \
+            arm64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \ 
             arm) \
                 case "${TARGETVARIANT}" in \
                     v6)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv6   ;; \
