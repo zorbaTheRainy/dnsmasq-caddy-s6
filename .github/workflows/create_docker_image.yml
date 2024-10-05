@@ -89,4 +89,4 @@ jobs:
           IS_S6=${{ steps.tag.outputs.IS_S6 }}
           S6_OVERLAY_VERSION=${{ github.event.inputs.s6_version }}
           BUILD_TIME=${{ steps.date.outputs.BUILD_TIME }}
-          BASE_IMAGE_TMP=${{ steps.tag.outputs.BASE_IMAGE }} # put her to get around an issue with LABEL in the Dockerfile
+          BASE_IMAGE_TMP=${{ steps.tag.outputs.BASE_IMAGE }}

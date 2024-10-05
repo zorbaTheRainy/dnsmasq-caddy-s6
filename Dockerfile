@@ -78,6 +78,7 @@ RUN if [ "$is_s6" = "true" ]; then \
         tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
         tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
         rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz && \
+        mkdir /init \
         touch /app/s6_installed.txt \
         ; \
     fi
