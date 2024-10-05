@@ -8,7 +8,8 @@ on:
         required: true
         type: choice
         options:
-          - alpine
+          - dnsmasq-only
+          - dnsmasq-s6
           - caddy
           - caddy-s6
       caddy_version:
@@ -19,7 +20,7 @@ on:
         description: 'Version of S6-Overlay to include in the build'
         required: true
         default: '3.2.0.0'
-            
+                  
 jobs:
   build:
 
@@ -39,10 +40,15 @@ jobs:
       id: tag
       run: |
         echo "IS_S6=false" >> $GITHUB_OUTPUT
-        if [ "${{ github.event.inputs.base_image }}" == "alpine" ]; then
+        if [ "${{ github.event.inputs.base_image }}" == "dnsmasq-only" ]; then
           echo "BASE_IMAGE=alpine:latest" >> $GITHUB_OUTPUT
           buildTag=$(date +%Y-%m-%d-%H-%M)
           echo "GH_TAG=$buildTag" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event.inputs.base_image }}" == "dnsmasq-s6" ]; then
+          echo "IS_S6=true" >> $GITHUB_OUTPUT
+          echo "BASE_IMAGE=alpine:latest" >> $GITHUB_OUTPUT
+          buildTag=$(date +%Y-%m-%d-%H-%M)
+          echo "GH_TAG=${buildTag}-s6" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.base_image }}" == "caddy" ]; then
             echo "BASE_IMAGE=caddy:${{ github.event.inputs.caddy_version }}-alpine" >> $GITHUB_OUTPUT
             echo "GH_TAG=caddy-${{ github.event.inputs.caddy_version }}" >> $GITHUB_OUTPUT
