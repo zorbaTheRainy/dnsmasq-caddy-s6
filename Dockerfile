@@ -1,4 +1,7 @@
 # Define the build argument (can be basic alpine for just dnsmasq/webproc,  or also caddy-alpine; tailscale can be added as S6 docker mod)
+    # Alpine docker image  ->  https://hub.docker.com/_/alpine
+    # Caddy docker image   ->  https://hub.docker.com/_/caddy
+    # Tailscale Docker Mod ->  https://github.com/tailscale-dev/docker-mod
 ARG BASE_IMAGE=alpine:latest
 FROM ${BASE_IMAGE}
 
@@ -81,11 +84,13 @@ RUN if [ "$is_s6" = "true" ]; then \
         tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
         tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
         rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz && \
-        mkdir /init \
+        mkdir /init && \
+        chmod 777 /init && \
         touch /app/s6_installed.txt \
         ; \
     else \
-        mkdir /init \
+        mkdir /init && \
+        chmod 777 /init  \
         ; \
     fi
 
