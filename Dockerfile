@@ -77,7 +77,7 @@ RUN if [ "$is_s6" = "true" ]; then \
         esac  && \
         tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
         tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz &&  \
-        rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz
+        rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz \
     fi
 
 EXPOSE 53/udp 8080
