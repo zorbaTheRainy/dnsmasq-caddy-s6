@@ -96,4 +96,4 @@ EXPOSE 53/udp 8080
   # runs dnsmasq/webproc and caddy (if it is installed)
 CMD ["/etc/start.sh"]
   # runs S6
- # ENTRYPOINT ["/init"]
+ENTRYPOINT ["/init"]
