@@ -18,8 +18,8 @@ ARG BUILD_TIME
 ARG BASE_IMAGE_TMP
 
 # passed via GitHub Action (but used in Stage 1: Build)
-# ARG S6_OVERLAY_VERSION
-# ARG WEBPROC_VERSION
+# ARG S6_OVERLAY_VERSION=3.2.0.0
+# ARG WEBPROC_VERSION=0.4.0
 
 # Add labels to the image metadata
 LABEL BASE_IMAGE=${BASE_IMAGE_TMP}
@@ -85,7 +85,7 @@ RUN apk update && \
 # -------------------------------------------------------------------------------------------------
 
 # Inputs 
-ARG WEBPROC_VERSION=3.2.0.0
+ARG WEBPROC_VERSION=0.4.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
 
 # Pull all the files (avoids `curl`, but causes use to pull more than we need, all archs not just one)
