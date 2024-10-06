@@ -13,59 +13,70 @@ ARG TARGETVARIANT
 
 # passed via GitHub Action
 ARG BUILD_TIME
-ARG IS_S6=false
 ARG WEBPROC_VERSION=0.4.0
 ARG S6_OVERLAY_VERSION=3.2.0.0
 ARG BASE_IMAGE_TMP
 
-# Set up URLs, which are dynamically created based on the version desired
-ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
-ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
-ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
-ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
-
-ENV S6_URL_AMD64      https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz
-ENV S6_URL_ARM64      https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-aarch64.tar.xz
-ENV S6_URL_ARMv7      https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-arm.tar.xz
-ENV S6_URL_ARMv6      https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-armhf.tar.xz
-
 # Add labels to the image metadata
 LABEL BASE_IMAGE=${BASE_IMAGE_TMP}
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
-LABEL IS_S6=${IS_S6}
 LABEL S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION}
 LABEL release-date=${BUILD_TIME}
 LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
 
+# -------------------------------------------------------------------------------------------------
+# Services
+# -------------------------------------------------------------------------------------------------
 
-# copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
-COPY keep_alive.sh /etc/keep_alive.sh
-COPY start.sh /etc/start.sh
 
-# Conditionally add s6 overlay
-RUN if [ "$is_s6" = "true" ]; then \
-        apk update && \
-        apk add --no-cache curl xz-utils && \
-        curl -L -o /tmp/s6-overlay-noarch.tar.xz https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz && \
-        case "${TARGETARCH}" in \
-            amd64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_AMD64 ;; \
-            arm64)  curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \
-            arm) \
-                case "${TARGETVARIANT}" in \
-                    v6)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv6 ;; \
-                    v7)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARMv7 ;; \
-                    v8)   curl -L -o /tmp/s6-overlay-yesarch.tar.xz $S6_URL_ARM64 ;; \
-                    *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
-                esac ;; \
-            *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
-        esac && \
-        tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
-        tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
-        # rm -rf /tmp/s6-overlay-noarch.tar.xz /tmp/s6-overlay-yesarch.tar.xz && \
-        touch /etc/s6_installed.txt \
-        ; \
-    fi
+# S6 Overlay           ->  https://github.com/just-containers/s6-overlay
+# -------------------------------------------------------------------------------------------------
+
+# Pull all the files (avoids `curl`, but causes use to pull more than we need, all archs not just one)
+ENV S6_URL_ROOT       https://github.com/just-containers/s6-overlay/releases/download/v{S6_OVERLAY_VERSION}
+# no-arch files
+ADD ${S6_URL_ROOT}/s6-overlay-noarch.tar.xz            /tmp/s6-overlay-noarch.tar.xz
+ADD ${S6_URL_ROOT}/s6-overlay-symlinks-noarch.tar.xz   /tmp/s6-overlay-symlinks-noarch.tar.xz
+ADD ${S6_URL_ROOT}/s6-overlay-symlinks-arch.tar.xz     /tmp/s6-overlay-symlinks-yesarch.tar.xz
+# Add architecture-specific files (note the difference in naming convenrtion between S6 & Docker)
+ADD ${S6_URL_ROOT}/s6-overlay-x86_64.tar.xz            /tmp/s6-overlay-yesarch-amd64.tar.xz
+ADD ${S6_URL_ROOT}/s6-overlay-aarch6.tar.xz            /tmp/s6-overlay-yesarch-arm64.tar.xz
+ADD ${S6_URL_ROOT}/s6-overlay-arm.tar.xz               /tmp/s6-overlay-yesarch-armv7.tar.xz
+ADD ${S6_URL_ROOT}/s6-overlay-armhf.tar.xz             /tmp/s6-overlay-yesarch-armv6.tar.xz
+
+# integrate the files into the file system
+RUN apk update && \
+    apk add --no-cache bash xz && \
+    case "${TARGETARCH}" in \
+        amd64)  mv /tmp/s6-overlay-yesarch-amd64.tar.xz /tmp/s6-overlay-yesarch.tar.xz  ;; \
+        arm64)  mv /tmp/s6-overlay-yesarch-arm64.tar.xz /tmp/s6-overlay-yesarch.tar.xz  ;; \
+        arm) \
+            case "${TARGETVARIANT}" in \
+                v6)   mv /tmp/s6-overlay-yesarch-armv6.tar.xz /tmp/s6-overlay-yesarch.tar.xz  ;; \
+                v7)   mv /tmp/s6-overlay-yesarch-armv7.tar.xz /tmp/s6-overlay-yesarch.tar.xz  ;; \
+                v8)   mv /tmp/s6-overlay-yesarch-arm64.tar.xz /tmp/s6-overlay-yesarch.tar.xz  ;; \
+                *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
+            esac ;; \
+        *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
+    esac && \
+    tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz && \
+    tar -C / -Jxpf /tmp/s6-overlay-symlinks-yesarch.tar.xz && \
+    rm -rf /tmp/s6-overlay-*.tar.xz && \
+    touch /s6_installed.txt \
+    ; 
+
+# S6 Overlay           ->  https://github.com/just-containers/s6-overlay
+# -------------------------------------------------------------------------------------------------
+
+    # Set up URLs, which are dynamically created based on the version desired
+ENV WEBPROC_URL_AMD64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_amd64.gz
+ENV WEBPROC_URL_ARM64 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_arm64.gz
+ENV WEBPROC_URL_ARMv7 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv7.gz
+ENV WEBPROC_URL_ARMv6 https://github.com/jpillora/webproc/releases/download/v$WEBPROC_VERSION/webproc_${WEBPROC_VERSION}_linux_armv6.gz
+
 
 
 EXPOSE 53/udp 8080
