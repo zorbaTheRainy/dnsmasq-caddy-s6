@@ -89,7 +89,7 @@ ARG WEBPROC_VERSION=3.2.0.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
 
 # Pull all the files (avoids `curl`, but causes use to pull more than we need, all archs not just one)
-ENV WEBPROC_URL_ROOT  https://github.com/jpillora/webproc/releases/download/v${WEBPROC_VERSION/}/webproc_${WEBPROC_VERSION}
+ENV WEBPROC_URL_ROOT  https://github.com/jpillora/webproc/releases/download/v${WEBPROC_VERSION}/webproc_${WEBPROC_VERSION}
 ADD ${WEBPROC_URL_ROOT}_linux_amd64.gz      /tmp/webproc_amd64.gz
 ADD ${WEBPROC_URL_ROOT}_linux_arm64.gz      /tmp/webproc_arm64.gz
 ADD ${WEBPROC_URL_ROOT}_linux_armv7.gz      /tmp/webproc_armv7.gz
