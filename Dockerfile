@@ -139,13 +139,13 @@ EXPOSE 53/udp 8080
 # Stage 2: Final image
 # -------------------------------------------------------------------------------------------------
 
-# by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL in Stage 0)
-FROM base
-# Copy the entire filesystem from the builder stage
-COPY --from=rootfs-stage / /
+# # by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL in Stage 0)
+# FROM base
+# # Copy the entire filesystem from the builder stage
+# COPY --from=rootfs-stage / /
 
-# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
-EXPOSE 53/udp 8080
+# # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+# EXPOSE 53/udp 8080
 
 # Run the desired programs
 ENTRYPOINT ["/init"]
