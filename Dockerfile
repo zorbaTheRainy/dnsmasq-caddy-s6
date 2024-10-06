@@ -41,7 +41,7 @@ ADD ${S6_URL_ROOT}/s6-overlay-symlinks-noarch.tar.xz   /tmp/s6-overlay-symlinks-
 ADD ${S6_URL_ROOT}/s6-overlay-symlinks-arch.tar.xz     /tmp/s6-overlay-symlinks-yesarch.tar.xz
 # Add architecture-specific files (note the difference in naming convenrtion between S6 & Docker)
 ADD ${S6_URL_ROOT}/s6-overlay-x86_64.tar.xz            /tmp/s6-overlay-yesarch-amd64.tar.xz
-ADD ${S6_URL_ROOT}/s6-overlay-aarch6.tar.xz            /tmp/s6-overlay-yesarch-arm64.tar.xz
+ADD ${S6_URL_ROOT}/s6-overlay-aarch64.tar.xz            /tmp/s6-overlay-yesarch-arm64.tar.xz
 ADD ${S6_URL_ROOT}/s6-overlay-arm.tar.xz               /tmp/s6-overlay-yesarch-armv7.tar.xz
 ADD ${S6_URL_ROOT}/s6-overlay-armhf.tar.xz             /tmp/s6-overlay-yesarch-armv6.tar.xz
 
