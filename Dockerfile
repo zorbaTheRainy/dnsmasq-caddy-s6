@@ -121,13 +121,13 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
                 esac;  ;; \
             *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
         esac  && \
-        # rm -rf /tmp/webproc_*.gz && \
+        rm -rf /tmp/webproc_* && \
         chmod +x /usr/local/bin/webproc && \
         apk del .build-deps && \
         mkdir -p /etc/default/ && \
         echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
-        mkdir -p /etc/services.d/webproc && \
-        cp /tmp/dnsmasq_run.sh /etc/services.d/webproc/run \
+        mkdir -p /etc/services.d/dnsmasq && \
+        mv /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run \
         ; \
     fi
 
@@ -139,7 +139,7 @@ EXPOSE 53/udp 8080
 # Stage 2: Final image
 # -------------------------------------------------------------------------------------------------
 
-    # by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL
+# by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL in Stage 0)
 FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs-stage / /
