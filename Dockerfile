@@ -127,7 +127,7 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         mkdir -p /etc/default/ && \
         echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
         mkdir -p /etc/services.d/dnsmasq && \
-        cp /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run \
+        cp /tmp/dnsmasq_run.sh /etc/services.d/webproc/run \
         ; \
     fi
 
