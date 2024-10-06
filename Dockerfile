@@ -39,6 +39,7 @@ ARG TARGETVARIANT
     # Services
     # -------------------------------------------------------------------------------------------------
 
+    # -------------------------------------------------------------------------------------------------
     # S6 Overlay           ->  https://github.com/just-containers/s6-overlay
 # -------------------------------------------------------------------------------------------------
 
@@ -81,12 +82,15 @@ RUN apk update && \
     touch /s6_installed.txt \
     ; 
 
+    # -------------------------------------------------------------------------------------------------
     # dnsmasq/webproc docker ->  https://github.com/jpillora/docker-dnsmasq
 # -------------------------------------------------------------------------------------------------
 
 # Inputs 
+ARG INCLUDE_DNSMASQ_WEBPROC=true
 ARG WEBPROC_VERSION=0.4.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
+
 
 # Pull all the files (avoids `curl`, but causes use to pull more than we need, all archs not just one)
 ENV WEBPROC_URL_ROOT  https://github.com/jpillora/webproc/releases/download/v${WEBPROC_VERSION}/webproc_${WEBPROC_VERSION}
@@ -101,28 +105,31 @@ COPY dnsmasq_run.sh /tmp/dnsmasq_run.sh
 
 # integrate the files into the file system
 # fetch dnsmasq and webproc binary
-RUN apk update && \
-	apk --no-cache add dnsmasq && \
-	apk add --no-cache --virtual .build-deps curl && \
-	case "${TARGETARCH}" in \
-		amd64)  gzip -d /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
-		arm64)  gzip -d /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
-        arm) \
-            case "${TARGETVARIANT}" in \
-                v6)   gzip -d /tmp/webproc_armv6.gz > /usr/local/bin/webproc   ;; \
-                v7)   gzip -d /tmp/webproc_armv7.gz > /usr/local/bin/webproc   ;; \
-                v8)   gzip -d /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
-                *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
-            esac;  ;; \
-		*) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
-    esac  && \
-	rm -rf /tmp/webproc_*.gz && \
-    chmod +x /usr/local/bin/webproc && \
-	apk del .build-deps && \
-    mkdir -p /etc/default/ && \
-    echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
-    mkdir -p /etc/services.d/dnsmasq && \
-    cp /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run
+RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
+        apk update && \
+        apk --no-cache add dnsmasq && \
+        apk add --no-cache --virtual .build-deps curl && \
+        case "${TARGETARCH}" in \
+            amd64)  gzip -d /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
+            arm64)  gzip -d /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
+            arm) \
+                case "${TARGETVARIANT}" in \
+                    v6)   gzip -d /tmp/webproc_armv6.gz > /usr/local/bin/webproc   ;; \
+                    v7)   gzip -d /tmp/webproc_armv7.gz > /usr/local/bin/webproc   ;; \
+                    v8)   gzip -d /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
+                    *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
+                esac;  ;; \
+            *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
+        esac  && \
+        rm -rf /tmp/webproc_*.gz && \
+        chmod +x /usr/local/bin/webproc && \
+        apk del .build-deps && \
+        mkdir -p /etc/default/ && \
+        echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
+        mkdir -p /etc/services.d/dnsmasq && \
+        cp /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run
+        ; \
+    fi
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
@@ -131,12 +138,14 @@ EXPOSE 53/udp 8080
 # -------------------------------------------------------------------------------------------------
 # Stage 2: Final image
 # -------------------------------------------------------------------------------------------------
-# by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL
+
+    # by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL
 FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs-stage / /
 
+# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+EXPOSE 53/udp 8080
+
 # Run the desired programs
-    # runs dnsmasq/webproc and caddy (if it is installed)
-# CMD ["/etc/start.sh"]
-# ENTRYPOINT ["/init"]
+ENTRYPOINT ["/init"]
