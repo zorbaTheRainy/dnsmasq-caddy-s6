@@ -121,7 +121,7 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
                 esac;  ;; \
             *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
         esac  && \
-        rm -rf /tmp/webproc_*.gz && \
+        # rm -rf /tmp/webproc_*.gz && \
         chmod +x /usr/local/bin/webproc && \
         apk del .build-deps && \
         mkdir -p /etc/default/ && \
