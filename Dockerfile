@@ -126,7 +126,7 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         apk del .build-deps && \
         mkdir -p /etc/default/ && \
         echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
-        mkdir -p /etc/services.d/dnsmasq && \
+        mkdir -p /etc/services.d/webproc && \
         cp /tmp/dnsmasq_run.sh /etc/services.d/webproc/run \
         ; \
     fi
