@@ -34,8 +34,8 @@ LABEL maintainer="dev@jpillora.com, and forked by ZorbaTheRainy"
 # -------------------------------------------------------------------------------------------------
 
 # Pull all the files (avoids `curl`, but causes use to pull more than we need, all archs not just one)
-#ENV S6_URL_ROOT       https://github.com/just-containers/s6-overlay/releases/download/v{S6_OVERLAY_VERSION}
-ENV S6_URL_ROOT       https://github.com/just-containers/s6-overlay/releases/download/v3.2.0.0
+ENV S6_URL_ROOT       https://github.com/just-containers/s6-overlay/releases/download/v{S6_OVERLAY_VERSION}
+#ENV S6_URL_ROOT       https://github.com/just-containers/s6-overlay/releases/download/v3.2.0.0
 # no-arch files
 ADD ${S6_URL_ROOT}/s6-overlay-noarch.tar.xz            /tmp/s6-overlay-noarch.tar.xz
 ADD ${S6_URL_ROOT}/s6-overlay-symlinks-noarch.tar.xz   /tmp/s6-overlay-symlinks-noarch.tar.xz
