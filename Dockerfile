@@ -110,13 +110,13 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         apk --no-cache add dnsmasq && \
         apk add --no-cache --virtual .build-deps curl && \
         case "${TARGETARCH}" in \
-            amd64)  gzip -d /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
-            arm64)  gzip -d /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
+            amd64)  gzip -d -c /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
+            arm64)  gzip -d -c /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
             arm) \
                 case "${TARGETVARIANT}" in \
-                    v6)   gzip -d /tmp/webproc_armv6.gz > /usr/local/bin/webproc   ;; \
-                    v7)   gzip -d /tmp/webproc_armv7.gz > /usr/local/bin/webproc   ;; \
-                    v8)   gzip -d /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
+                    v6)   gzip -d -c /tmp/webproc_armv6.gz > /usr/local/bin/webproc   ;; \
+                    v7)   gzip -d -c /tmp/webproc_armv7.gz > /usr/local/bin/webproc   ;; \
+                    v8)   gzip -d -c /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
                     *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
                 esac;  ;; \
             *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
