@@ -86,46 +86,50 @@ RUN apk update && \
     # dnsmasq/webproc docker ->  https://github.com/jpillora/docker-dnsmasq
 # -------------------------------------------------------------------------------------------------
 
-        # Stage 1.1: Compile image 
-    # -------------------------------------------------------------------------------------------------
-    # Use the official Golang image to build the application
-    FROM golang:1.22 AS compile-webproc
-    ARG WEBPROC_VERSION=0.4.0
-
-    # Set the working directory inside the container
-    WORKDIR /app
-
-    # Download the source code
-    RUN git clone --branch v${WEBPROC_VERSION} https://github.com/jpillora/webproc.git .
-
-    # Compile the source code
-    RUN go build -o webproc
-
-        # Stage 1.2: return to rootfs-stage Image
-    # -------------------------------------------------------------------------------------------------
-# Use a minimal image to run the application
-FROM rootfs-stage
-
 # Inputs 
+ARG INCLUDE_DNSMASQ_WEBPROC=true
 ARG WEBPROC_VERSION=0.4.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
 
-# Copy the compiled binary from the compilation stage
-COPY --from=compile-webproc /app/webproc /usr/local/bin/webproc
+
+# Pull all the files (avoids `curl`, but causes use to pull more than we need, all archs not just one)
+ENV WEBPROC_URL_ROOT  https://github.com/jpillora/webproc/releases/download/v${WEBPROC_VERSION}/webproc_${WEBPROC_VERSION}
+ADD ${WEBPROC_URL_ROOT}_linux_amd64.gz      /tmp/webproc_amd64.gz
+ADD ${WEBPROC_URL_ROOT}_linux_arm64.gz      /tmp/webproc_arm64.gz
+ADD ${WEBPROC_URL_ROOT}_linux_armv7.gz      /tmp/webproc_armv7.gz
+ADD ${WEBPROC_URL_ROOT}_linux_armv6.gz      /tmp/webproc_armv6.gz
+
 # copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY dnsmasq.conf /etc/dnsmasq.conf
 COPY dnsmasq_run.sh /tmp/dnsmasq_run.sh
 
-# fetch dnsmasq, and setup permissions and scripts
-RUN apk update && \
-    apk --no-cache add dnsmasq && \
-    apk add --no-cache --virtual .build-deps curl && \
-    chmod +x /usr/local/bin/webproc && \
-    mkdir -p /etc/default/ && \
-    echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
-    mkdir -p /etc/services.d/dnsmasq && \
-    mv /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run \
-    ; 
+# integrate the files into the file system
+# fetch dnsmasq and webproc binary
+RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
+        apk update && \
+        apk --no-cache add dnsmasq && \
+        apk add --no-cache --virtual .build-deps curl && \
+        case "${TARGETARCH}" in \
+            amd64)  gzip -d -c /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
+            arm64)  gzip -d -c /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
+            arm) \
+                case "${TARGETVARIANT}" in \
+                    v6)   gzip -d -c /tmp/webproc_armv6.gz > /usr/local/bin/webproc   ;; \
+                    v7)   gzip -d -c /tmp/webproc_armv7.gz > /usr/local/bin/webproc   ;; \
+                    v8)   gzip -d -c /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
+                    *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
+                esac;  ;; \
+            *) echo >&2 "error: unsupported architecture (${TARGETARCH}/${TARGETVARIANT})"; exit 1 ;; \
+        esac  && \
+        rm -rf /tmp/webproc_* && \
+        chmod +x /usr/local/bin/webproc && \
+        apk del .build-deps && \
+        mkdir -p /etc/default/ && \
+        echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
+        mkdir -p /etc/services.d/dnsmasq && \
+        mv /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run \
+        ; \
+    fi
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
