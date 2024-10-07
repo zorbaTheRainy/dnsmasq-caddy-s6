@@ -169,10 +169,8 @@ RUN set -eux; \
 # copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY caddy_run.sh /tmp/caddy_run.sh
 RUN mkdir -p /etc/services.d/caddy && \
-    mv /tmp/caddy_run.sh /etc/services.d/caddy/run \
+    mv /tmp/caddy_run.sh /etc/services.d/caddy/run && \
     chmod +x /etc/services.d/caddy/run
-
-
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 # See https://caddyserver.com/docs/conventions#file-locations for details
