@@ -37,9 +37,11 @@ jobs:
       run: |
         if [ "${{ github.event.inputs.image_purpose }}" == "testing" ]; then
           buildTag=$(date +%Y-%m-%d-%H-%M)
-          echo "GH_TAG=$buildTag" >> $GITHUB_OUTPUT
+          echo "GH_BUILD_TAG=$buildTag" >> $GITHUB_OUTPUT
+          echo "GH_LATEST_TAG='testing'" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.image_purpose }}" == "production" ]; then
-          echo "GH_TAG=${{ github.event.inputs.caddy_version }}" >> $GITHUB_OUTPUT
+          echo "GH_BUILD_TAG=${{ github.event.inputs.caddy_version }}" >> $GITHUB_OUTPUT
+          echo "GH_LATEST_TAG='latest'" >> $GITHUB_OUTPUT
         else
           echo "Invalid base image specified" >&2
           exit 1
@@ -67,10 +69,8 @@ jobs:
         # platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:${{ steps.tag.outputs.GH_TAG }}
-          if [ "${{ github.event.inputs.image_purpose }}" == "production" ]; then
-            ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:latest
-          fi
+          ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:${{ steps.tag.outputs.GH_BUILD_TAG }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/dnsmasq:${{ steps.tag.outputs.GH_LATEST_TAG }}
         build-args: |
           S6_OVERLAY_VERSION=${{ github.event.inputs.s6_version }}
           CADDY_VERSION=${{ github.event.inputs.caddy_version }}
