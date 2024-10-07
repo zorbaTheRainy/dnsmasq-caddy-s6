@@ -158,7 +158,8 @@ RUN set -eux; \
 	; \
 
 # Create donor image that we'll steal files from 
-FROM caddy:2.8.1-alpine AS donor
+FROM caddy:2.8.1-alpine
+RUN mkdir /donor
 # switch back to our image being built
 FROM rootfs-stage
 
