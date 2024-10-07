@@ -10,7 +10,6 @@
 # -------------------------------------------------------------------------------------------------
 # FROM ${BASE_IMAGE}
 ARG BASE_IMAGE=alpine:latest
-ARG CADDY_VERSION=2.8.1
 # FROM ${BASE_IMAGE} as base
 FROM alpine:latest AS base
 
