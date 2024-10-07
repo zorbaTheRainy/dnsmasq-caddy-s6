@@ -108,7 +108,6 @@ COPY dnsmasq_run.sh /tmp/dnsmasq_run.sh
 RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         apk update && \
         apk --no-cache add dnsmasq && \
-        # apk add --no-cache --virtual .build-deps curl && \
         case "${TARGETARCH}" in \
             amd64)  gzip -d -c /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
             arm64)  gzip -d -c /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
@@ -123,7 +122,6 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         esac  && \
         rm -rf /tmp/webproc_* && \
         chmod +x /usr/local/bin/webproc && \
-        # apk del .build-deps && \
         mkdir -p /etc/default/ && \
         echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
         mkdir -p /etc/services.d/dnsmasq && \
