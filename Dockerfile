@@ -12,8 +12,11 @@
 ARG BASE_IMAGE=alpine:latest
 ARG CADDY_VERSION=2.8.1
 
-# FROM ${BASE_IMAGE} as base
-FROM caddy:${CADDY_VERSION}-alpine AS caddy-stage
+# set this up to copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
+# NOTE: Docker doesn’t directly substitute environment variables in the --from part of the COPY instruction.  We have to use FROM (and up here not below) to handle this
+FROM caddy:${CADDY_VERSION}-alpine AS caddy_donor
+
+# set our actual BASE_IMAGE
 FROM alpine:latest AS base
 
 # passed via GitHub Action
@@ -151,19 +154,12 @@ RUN apk add --no-cache \
 	libcap \
 	mailcap
 
-RUN set -eux; \
-	mkdir -p \
-		/config/caddy \
-		/data/caddy \
-		/etc/caddy \
-		/usr/share/caddy \
-	; \
+RUN mkdir -p /config/caddy /data/caddy /etc/caddy /usr/share/caddy 
 
 # copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
-# ENV CADDY_IMAGE caddy:${CADDY_VERSION}-alpine
-# COPY --from=caddy:${CADDY_VERSION}-alpine /etc/caddy/Caddyfile /etc/caddy/Caddyfile
-# COPY --from=caddy:${CADDY_VERSION}-alpine /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=caddy-stage /usr/bin/caddy /usr/bin/caddy
+COPY --from=caddy_donor /etc/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=caddy_donor /usr/share/caddy/index.html /usr/share/caddy/index.html
+COPY --from=caddy_donor /usr/bin/caddy /usr/bin/caddy
 
 RUN set -eux; \
 	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
