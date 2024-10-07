@@ -127,8 +127,8 @@ RUN chmod +x /usr/local/bin/webproc
 RUN mkdir -p /etc/default/ 
 RUN echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
         mkdir -p /etc/services.d/dnsmasq && \
-        mv /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run \
-
+        mv /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run 
+        
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
 # ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
