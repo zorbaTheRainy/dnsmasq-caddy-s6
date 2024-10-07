@@ -160,7 +160,7 @@ RUN set -eux; \
 ENV CADDY_IMAGE caddy:${CADDY_VERSION}-alpine
 # COPY --from=caddy:${CADDY_VERSION}-alpine /etc/caddy/Caddyfile /etc/caddy/Caddyfile
 # COPY --from=caddy:${CADDY_VERSION}-alpine /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=${CADDY_IMAGE} /usr/bin/caddy /usr/bin/caddy
+COPY --from=caddy:${CADDY_VERSION}-alpine /usr/bin/caddy /usr/bin/caddy
 
 RUN set -eux; \
 	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
