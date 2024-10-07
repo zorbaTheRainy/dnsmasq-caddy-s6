@@ -116,10 +116,10 @@ COPY --from=compile-webproc /app/webproc /usr/local/bin/webproc
 COPY dnsmasq.conf /etc/dnsmasq.conf
 COPY dnsmasq_run.sh /tmp/dnsmasq_run.sh
 
-# integrate the files into the file system
-# fetch dnsmasq and webproc binary
+# fetch dnsmasq, and setup permissions and scripts
 RUN apk update && \
     apk --no-cache add dnsmasq && \
+    apk add --no-cache --virtual .build-deps curl && \
     chmod +x /usr/local/bin/webproc && \
     mkdir -p /etc/default/ && \
     echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
