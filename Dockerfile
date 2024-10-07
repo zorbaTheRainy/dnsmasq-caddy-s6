@@ -187,13 +187,20 @@ EXPOSE 2019
 # Stage 2: Final image
 # -------------------------------------------------------------------------------------------------
 
-# # by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL in Stage 0)
-# FROM base
-# # Copy the entire filesystem from the builder stage
-# COPY --from=rootfs_stage / /
+# by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL in Stage 0)
+FROM base
+# Copy the entire filesystem from the builder stage
+COPY --from=rootfs_stage / /
 
-# # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
-# EXPOSE 53/udp 8080
+# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+EXPOSE 53/udp 8080
+ENV CADDY_VERSION v${CADDY_VERSION}
+ENV XDG_CONFIG_HOME /config
+ENV XDG_DATA_HOME /data
+EXPOSE 80
+EXPOSE 443
+EXPOSE 443/udp
+EXPOSE 2019
 
 # Run the desired programs
 ENTRYPOINT ["/init"]
