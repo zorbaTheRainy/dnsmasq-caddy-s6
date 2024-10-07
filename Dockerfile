@@ -10,7 +10,7 @@
 # -------------------------------------------------------------------------------------------------
 # FROM ${BASE_IMAGE}
 ARG BASE_IMAGE=alpine:latest
-ARG CADDY_VERSION=2.8.4
+ARG CADDY_VERSION=2.8.1
 # FROM ${BASE_IMAGE} as base
 FROM alpine:latest as base
 
@@ -140,7 +140,7 @@ EXPOSE 53/udp 8080
 
 # Inputs 
 ARG INCLUDE_CADDY=true
-ARG CADDY_VERSION=2.8.4
+ARG CADDY_VERSION=2.8.1
 LABEL CADDY_VERSION=${CADDY_VERSION}
 
 # All of this is copied (with edits) from the Caddy Dockerfile (https://raw.githubusercontent.com/caddyserver/caddy-docker/refs/heads/master/Dockerfile.tmpl)
@@ -158,7 +158,7 @@ RUN set -eux; \
 	; \
 
 # Create donor image that we'll steal files from 
-FROM caddy:${CADDY_VERSION} as caddy-donor
+FROM caddy:2.8.1-alpine as caddy-donor
 # switch back to our image being built
 FROM rootfs-stage
 
