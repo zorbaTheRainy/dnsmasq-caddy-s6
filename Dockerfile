@@ -159,6 +159,7 @@ RUN set -eux; \
 
 # Create donor image that we'll steal files from 
 FROM caddy:2.8.1-alpine as caddy-donor
+LABEL IS_TMP=true
 # switch back to our image being built
 FROM rootfs-stage
 
