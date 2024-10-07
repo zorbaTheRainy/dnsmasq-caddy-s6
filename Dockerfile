@@ -189,8 +189,8 @@ FROM base
 COPY --from=rootfs_stage / /
 
 # enable variables
-ENABLE_DNSMASQ true
-ENABLE_CADDY true
+ENV ENABLE_DNSMASQ true
+ENV ENABLE_CADDY true
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
