@@ -30,7 +30,7 @@ LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 # -------------------------------------------------------------------------------------------------
 # Stage 1: Build image
 # -------------------------------------------------------------------------------------------------
-FROM base AS rootfs-stage
+FROM base AS rootfs_stage
 
 # inherent in the build system
 ARG TARGETARCH
@@ -158,15 +158,15 @@ RUN set -eux; \
 	; \
 
 # Create donor image that we'll steal files from 
-FROM caddy:2.8.1-alpine
-RUN mkdir /donor
+#FROM caddy:2.8.1-alpine AS caddy_donor
+# RUN mkdir /donor
 # switch back to our image being built
-FROM rootfs-stage
+FROM rootfs_stage
 
 # copy files from the donor ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
-COPY --from=donor /etc/caddy/Caddyfile /etc/caddy/Caddyfile
-COPY --from=donor /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=donor /usr/bin/caddy /usr/bin/caddy
+# COPY --from=donor /etc/caddy/Caddyfile /etc/caddy/Caddyfile
+# COPY --from=donor /usr/share/caddy/index.html /usr/share/caddy/index.html
+COPY --from=caddy:2.8.1-alpine /usr/bin/caddy /usr/bin/caddy
 
 RUN set -eux; \
 	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
@@ -199,7 +199,7 @@ EXPOSE 2019
 # # by using 'base' (which was set earlier, this image inherets any already set ENV/LABEL in Stage 0)
 # FROM base
 # # Copy the entire filesystem from the builder stage
-# COPY --from=rootfs-stage / /
+# COPY --from=rootfs_stage / /
 
 # # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 # EXPOSE 53/udp 8080
