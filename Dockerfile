@@ -157,16 +157,10 @@ RUN set -eux; \
 		/usr/share/caddy \
 	; \
 
-# Create donor image that we'll steal files from 
-#FROM caddy:2.8.1-alpine AS caddy_donor
-# RUN mkdir /donor
-# switch back to our image being built
-FROM rootfs_stage
-
-# copy files from the donor ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
-# COPY --from=donor /etc/caddy/Caddyfile /etc/caddy/Caddyfile
-# COPY --from=donor /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=caddy:2.8.1-alpine /usr/bin/caddy /usr/bin/caddy
+# copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
+COPY --from=caddy:${CADDY_VERSION}-alpine /etc/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=caddy:${CADDY_VERSION}-alpine /usr/share/caddy/index.html /usr/share/caddy/index.html
+COPY --from=caddy:${CADDY_VERSION}-alpine /usr/bin/caddy /usr/bin/caddy
 
 RUN set -eux; \
 	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
