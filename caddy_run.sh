@@ -1,4 +1,5 @@
 #!/command/execlineb -P
+with-contenv
 
 # Change to the working directory
 cd /srv
