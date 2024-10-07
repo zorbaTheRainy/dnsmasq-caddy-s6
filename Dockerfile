@@ -133,6 +133,56 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
 EXPOSE 53/udp 8080
 # ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
 
+    # -------------------------------------------------------------------------------------------------
+    # Caddy docker image     ->  https://hub.docker.com/_/caddy
+# -------------------------------------------------------------------------------------------------
+
+# Inputs 
+ARG INCLUDE_CADDY=true
+ARG CADDY_VERSION=2.8.4
+LABEL CADDY_VERSION=${CADDY_VERSION}
+
+
+# All of this is copied (with edits) from the Caddy Dockerfile (https://raw.githubusercontent.com/caddyserver/caddy-docker/refs/heads/master/Dockerfile.tmpl)
+RUN apk add --no-cache \
+	ca-certificates \
+	libcap \
+	mailcap
+
+RUN set -eux; \
+	mkdir -p \
+		/config/caddy \
+		/data/caddy \
+		/etc/caddy \
+		/usr/share/caddy \
+	; \
+
+# Create donor image that we'll steal files from 
+FROM caddy:${CADDY_VERSION} as caddy-donor
+# switch back to our image being built
+FROM rootfs-stage
+
+# copy files from the donor ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
+COPY --from=caddy-donor /etc/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=caddy-donor /usr/share/caddy/index.html /usr/share/caddy/index.html
+COPY --from=caddy-donor /usr/bin/caddy /usr/bin/caddy
+
+RUN set -eux; \
+	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
+	chmod +x /usr/bin/caddy; \
+	caddy version
+
+# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+# See https://caddyserver.com/docs/conventions#file-locations for details
+ENV CADDY_VERSION v${CADDY_VERSION}
+ENV XDG_CONFIG_HOME /config
+ENV XDG_DATA_HOME /data
+EXPOSE 80
+EXPOSE 443
+EXPOSE 443/udp
+EXPOSE 2019
+# CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+
 # -------------------------------------------------------------------------------------------------
 # Stage 2: Final image
 # -------------------------------------------------------------------------------------------------
