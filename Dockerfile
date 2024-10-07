@@ -12,7 +12,7 @@
 ARG BASE_IMAGE=alpine:latest
 ARG CADDY_VERSION=2.8.1
 # FROM ${BASE_IMAGE} as base
-FROM alpine:latest as base
+FROM alpine:latest AS base
 
 # passed via GitHub Action
 ARG BUILD_TIME
@@ -30,7 +30,7 @@ LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 # -------------------------------------------------------------------------------------------------
 # Stage 1: Build image
 # -------------------------------------------------------------------------------------------------
-FROM base as rootfs-stage
+FROM base AS rootfs-stage
 
 # inherent in the build system
 ARG TARGETARCH
@@ -158,8 +158,7 @@ RUN set -eux; \
 	; \
 
 # Create donor image that we'll steal files from 
-FROM caddy:2.8.1-alpine as donor
-LABEL IS_TMP=true
+FROM caddy:2.8.1-alpine AS donor
 # switch back to our image being built
 FROM rootfs-stage
 
