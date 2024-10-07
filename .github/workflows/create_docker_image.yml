@@ -38,10 +38,10 @@ jobs:
         if [ "${{ github.event.inputs.image_purpose }}" == "testing" ]; then
           buildTag=$(date +%Y-%m-%d-%H-%M)
           echo "GH_BUILD_TAG=$buildTag" >> $GITHUB_OUTPUT
-          echo "GH_LATEST_TAG='testing'" >> $GITHUB_OUTPUT
+          echo "GH_LATEST_TAG=testing" >> $GITHUB_OUTPUT
         elif [ "${{ github.event.inputs.image_purpose }}" == "production" ]; then
           echo "GH_BUILD_TAG=${{ github.event.inputs.caddy_version }}" >> $GITHUB_OUTPUT
-          echo "GH_LATEST_TAG='latest'" >> $GITHUB_OUTPUT
+          echo "GH_LATEST_TAG=latest" >> $GITHUB_OUTPUT
         else
           echo "Invalid base image specified" >&2
           exit 1
