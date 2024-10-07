@@ -8,12 +8,10 @@
 # -------------------------------------------------------------------------------------------------
 # Stage 0: Create base image and set ENV/LABELS
 # -------------------------------------------------------------------------------------------------
-# FROM ${BASE_IMAGE}
-ARG BASE_IMAGE=alpine:latest
-ARG CADDY_VERSION=2.8.1
 
 # set this up to copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
 # NOTE: Docker doesn’t directly substitute environment variables in the --from part of the COPY instruction.  We have to use FROM (and up here not below) to handle this
+ARG CADDY_VERSION=2.8.1
 FROM caddy:${CADDY_VERSION}-alpine AS caddy_donor
 
 # set our actual BASE_IMAGE
@@ -21,14 +19,12 @@ FROM alpine:latest AS base
 
 # passed via GitHub Action
 ARG BUILD_TIME
-ARG BASE_IMAGE_TMP
 
 # passed via GitHub Action (but used in Stage 1: Build)
 # ARG S6_OVERLAY_VERSION=3.2.0.0
 # ARG WEBPROC_VERSION=0.4.0
 
 # Add labels to the image metadata
-LABEL BASE_IMAGE=${BASE_IMAGE_TMP}
 LABEL release-date=${BUILD_TIME}
 LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
 
@@ -191,6 +187,10 @@ EXPOSE 2019
 FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs_stage / /
+
+# enable variables
+ENABLE_DNSMASQ true
+ENABLE_CADDY true
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
