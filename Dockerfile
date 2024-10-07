@@ -10,7 +10,10 @@
 # -------------------------------------------------------------------------------------------------
 # FROM ${BASE_IMAGE}
 ARG BASE_IMAGE=alpine:latest
+ARG CADDY_VERSION=2.8.1
+
 # FROM ${BASE_IMAGE} as base
+FROM caddy:${CADDY_VERSION}-alpine AS caddy-stage
 FROM alpine:latest AS base
 
 # passed via GitHub Action
@@ -139,7 +142,7 @@ EXPOSE 53/udp 8080
 
 # Inputs 
 ARG INCLUDE_CADDY=true
-ARG CADDY_VERSION=2.8.1
+# ARG CADDY_VERSION=2.8.1
 LABEL CADDY_VERSION=${CADDY_VERSION}
 
 # All of this is copied (with edits) from the Caddy Dockerfile (https://raw.githubusercontent.com/caddyserver/caddy-docker/refs/heads/master/Dockerfile.tmpl)
@@ -157,10 +160,10 @@ RUN set -eux; \
 	; \
 
 # copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
-ENV CADDY_IMAGE caddy:${CADDY_VERSION}-alpine
+# ENV CADDY_IMAGE caddy:${CADDY_VERSION}-alpine
 # COPY --from=caddy:${CADDY_VERSION}-alpine /etc/caddy/Caddyfile /etc/caddy/Caddyfile
 # COPY --from=caddy:${CADDY_VERSION}-alpine /usr/share/caddy/index.html /usr/share/caddy/index.html
-COPY --from=caddy:${CADDY_VERSION}-alpine /usr/bin/caddy /usr/bin/caddy
+COPY --from=caddy-stage /usr/bin/caddy /usr/bin/caddy
 
 RUN set -eux; \
 	setcap cap_net_bind_service=+ep /usr/bin/caddy; \
