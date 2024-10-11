@@ -1,4 +1,5 @@
 #!/bin/bash
+with-contenv
 
     # -------------------------------------------------------------------------------------------------
     # Caddy docker image     ->  https://hub.docker.com/_/caddy
@@ -7,12 +8,17 @@
 echo "Enable: ${ENABLE_CADDY}"
 
 # Check if ENABLE_CADDY is 1 or true (case insensitive)
-if [ "${ENABLE_CADDY}" -eq 1 ] || [ "${ENABLE_CADDY}" -eq 0 ] 2>/dev/null; then
-  if [ "${ENABLE_CADDY}" -eq 1 ]; then
-    ENABLE_CADDY="true"
-  else
-    ENABLE_CADDY="false"
-  fi
+# Debugging: Check if ENABLE_CADDY is set
+if [ -z "${ENABLE_CADDY}" ]; then
+  echo "ENABLE_CADDY is not set!"
+  exit 1
+fi
+
+# Check if ENABLE_CADDY is 1 or true (case insensitive)
+if [ "${ENABLE_CADDY}" -eq 1 ] 2>/dev/null; then
+  ENABLE_CADDY="true"
+elif [ "${ENABLE_CADDY}" -eq 0 ] 2>/dev/null; then
+  ENABLE_CADDY="false"
 fi
 
 # Convert ENABLE_CADDY to lowercase for comparison
