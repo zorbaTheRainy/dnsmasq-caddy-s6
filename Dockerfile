@@ -138,7 +138,7 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         ; \
     fi
 
-# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+# Things to copy to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
 # ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
 
@@ -173,12 +173,12 @@ RUN set -eux; \
 COPY caddy_run.sh /tmp/caddy_run.sh
 RUN mkdir -p /etc/services-available/caddy && \
     mv /tmp/caddy_run.sh /etc/services-available/caddy/run && \
-    chmod +x /etc/services.d/caddy/run
+    chmod +x /etc/services-available/caddy/run
 
-# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
-# See https://caddyserver.com/docs/conventions#file-locations for details
+# Things to copy to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 ENV CADDY_VERSION v${CADDY_VERSION}
-ENV XDG_CONFIG_HOME /config
+# See https://caddyserver.com/docs/conventions#file-locations for details
+ENV XDG_CONFIG_HOME /configuration
 ENV XDG_DATA_HOME /data
 EXPOSE 80
 EXPOSE 443
@@ -195,11 +195,11 @@ FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs_stage / /
 
-# enable variables
+# enablement variables
 ENV ENABLE_DNSMASQ true
 ENV ENABLE_CADDY false
 
-# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+# Things copied from an old Stage 1: Build image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
 ENV CADDY_VERSION v${CADDY_VERSION}
 ENV XDG_CONFIG_HOME /config
