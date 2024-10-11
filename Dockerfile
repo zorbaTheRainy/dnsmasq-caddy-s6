@@ -61,6 +61,9 @@ ADD ${S6_URL_ROOT}/s6-overlay-aarch64.tar.xz           /tmp/s6-overlay-yesarch-a
 ADD ${S6_URL_ROOT}/s6-overlay-arm.tar.xz               /tmp/s6-overlay-yesarch-armv7.tar.xz
 ADD ${S6_URL_ROOT}/s6-overlay-armhf.tar.xz             /tmp/s6-overlay-yesarch-armv6.tar.xz
 
+# copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
+COPY 99-enable-services.sh /tmp/99-enable-services.sh
+
 # integrate the files into the file system
 RUN apk update && \
     apk add --no-cache bash xz && \
@@ -81,6 +84,10 @@ RUN apk update && \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz && \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-yesarch.tar.xz && \
     rm -rf /tmp/s6-overlay-*.tar.xz && \
+    mkdir -p /etc/services-available && \
+    mkdir -p /etc/services.d/99-enable-services  && \
+    mv /tmp/99-enable-services.sh /etc/services.d/99-enable-services/run && \
+    chmod 755 /etc/services.d/99-enable-services/run && \
     touch /s6_installed.txt \
     ; 
 
@@ -164,8 +171,8 @@ RUN set -eux; \
 
 # copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY caddy_run.sh /tmp/caddy_run.sh
-RUN mkdir -p /etc/services.d/caddy && \
-    mv /tmp/caddy_run.sh /etc/services.d/caddy/run && \
+RUN mkdir -p /etc/services-available/caddy && \
+    mv /tmp/caddy_run.sh /etc/services-available/caddy/run && \
     chmod +x /etc/services.d/caddy/run
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
@@ -190,7 +197,7 @@ COPY --from=rootfs_stage / /
 
 # enable variables
 ENV ENABLE_DNSMASQ true
-ENV ENABLE_CADDY true
+ENV ENABLE_CADDY false
 
 # Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
