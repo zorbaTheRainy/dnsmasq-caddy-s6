@@ -1,38 +1,43 @@
-#!/bin/bash
+#!/command/execlineb -P
 with-contenv
 
-    # -------------------------------------------------------------------------------------------------
-    # Caddy docker image     ->  https://hub.docker.com/_/caddy
-# -------------------------------------------------------------------------------------------------
+s6-envdir /etc/envs
+s6-echo Enable: ${ENABLE_CADDY}
 
-echo "Enable: ${ENABLE_CADDY}"
-
-# Check if ENABLE_CADDY is 1 or true (case insensitive)
 # Debugging: Check if ENABLE_CADDY is set
-if [ -z "${ENABLE_CADDY}" ]; then
-  echo "ENABLE_CADDY is not set!"
-  exit 1
-fi
+if { s6-test ${ENABLE_CADDY} = "" }
+    foreground {
+      s6-echo ENABLE_CADDY is not set!
+      exit 1
+    }
 
 # Check if ENABLE_CADDY is 1 or true (case insensitive)
-if [ "${ENABLE_CADDY}" -eq 1 ] 2>/dev/null; then
-  ENABLE_CADDY="true"
-elif [ "${ENABLE_CADDY}" -eq 0 ] 2>/dev/null; then
-  ENABLE_CADDY="false"
-fi
+if { s6-test ${ENABLE_CADDY} -eq 1 }
+    foreground {
+        s6-envdir /etc/envs s6-echo ENABLE_CADDY = true
+        s6-export ENABLE_CADDY true
+    }
 
-# Convert ENABLE_CADDY to lowercase for comparison
-ENABLE_CADDY_LOWER=$(echo "${ENABLE_CADDY}" | tr '[:upper:]' '[:lower:]')
+if { s6-test ${ENABLE_CADDY} -eq 0 }
+    foreground {
+        s6-envdir /etc/envs s6-echo ENABLE_CADDY = false
+        s6-export ENABLE_CADDY false
+    }
 
-# perform the actual check
-if [ "${ENABLE_CADDY_LOWER}" == "true" ]; then
-  echo '[run] enabling Caddy reverse proxy'
+foreground {
+    # Convert ENABLE_CADDY to lowercase for comparison
+    s6-envdir /etc/envs ENABLE_CADDY_LOWER $(echo ${ENABLE_CADDY} | tr '[:upper:]' '[:lower:]')
 
-  # Enable nginx as a supervised service
-  if [ -d /etc/services.d/caddy ]
-  then
-    echo '[run] Caddy reverse proxy already enabled'
-  else
-    ln -s /etc/services-available/caddy /etc/services.d/caddy
-  fi
-fi
+    # Perform the actual check
+    if { s6-test ${ENABLE_CADDY_LOWER} = "true" }
+        s6-echo '[run] enabling Caddy reverse proxy'
+        
+        if { s6-test -d /etc/services.d/caddy }
+            s6-echo '[run] Caddy reverse proxy already enabled'
+        else
+            ln -s /etc/services-available/caddy /etc/services.d/caddy
+        fi
+    fi
+
+    rm /etc/services.d/99-enable-services/run
+}
