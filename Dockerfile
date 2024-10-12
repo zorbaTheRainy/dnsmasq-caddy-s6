@@ -89,9 +89,6 @@ RUN apk update && \
     mkdir -p /etc/cont-init.d && \
     mv /tmp/99-enable-services.sh /etc/cont-init.d/99-enable-services.sh && \
     chmod 755 /etc/cont-init.d/99-enable-services.sh && \
-    # mkdir -p /etc/services.d/99-enable-services  && \
-    # mv /tmp/99-enable-services_run /etc/services.d/99-enable-services/run && \
-    # chmod 755 /etc/services.d/99-enable-services/run && \
     touch /s6_installed.txt \
     ; 
 

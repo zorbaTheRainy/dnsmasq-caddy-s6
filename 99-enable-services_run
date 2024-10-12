@@ -1,5 +1,0 @@
-#!/command/execlineb -P
-with-contenv
-
-# Run the webproc command with the specified configuration
-/etc/services-available/99-enable-services.sh
