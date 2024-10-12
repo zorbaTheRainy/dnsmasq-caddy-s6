@@ -175,7 +175,7 @@ COPY caddy_run.sh /tmp/caddy_run.sh
 RUN mkdir -p /etc/services-available/caddy && \
     mv /tmp/caddy_run.sh /etc/services-available/caddy/run && \
     chmod +x /etc/services-available/caddy/run && \
-    if [ -f "/etc/cont-init.d/99-enable-services.sh"0 ]; then \
+    if [ -f "/etc/cont-init.d/99-enable-services.sh" ]; then \
         echo '"${ENABLE_CADDY}" "caddy" "Caddy reverse proxy"' >> /etc/cont-init.d/99-enable-services.sh \
     fi ; 
 
