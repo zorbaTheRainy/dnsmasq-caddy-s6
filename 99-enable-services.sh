@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/with-contenv sh
 
     # -------------------------------------------------------------------------------------------------
     # Caddy docker image     ->  https://hub.docker.com/_/caddy
