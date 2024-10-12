@@ -33,4 +33,4 @@ enable_service() {
 
 # Example calls for two services with description and using the environment variable ENABLE_CADDY
     # Caddy docker image     ->  https://hub.docker.com/_/caddy
-enable_service "${ENABLE_CADDY}" "caddy" "Caddy reverse proxy"
+# enable_service "${ENABLE_CADDY}" "caddy" "Caddy reverse proxy"
