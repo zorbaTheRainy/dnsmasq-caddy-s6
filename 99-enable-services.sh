@@ -17,17 +17,17 @@ enable_service() {
 
   # perform the actual check
   if [ "${enable_flag_lower}" == "true" ]; then
-    echo '[enable-services] enabling ${description}'
+    echo "[enable-services] enabling ${description}"
 
     # Enable supervised service
     if [ -d /etc/services.d/${service_name} ]
     then
-      echo '[enable-services] ${description} already enabled'
+      echo "[enable-services] ${description} already enabled"
     else
       ln -s /etc/services-available/${service_name} /etc/services.d/${service_name}
     fi
   else
-    echo '[enable-services] disabled ${description}'
+    echo "[enable-services] disabled ${description}"
   fi
 }
 
