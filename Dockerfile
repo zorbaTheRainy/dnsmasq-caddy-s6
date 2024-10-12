@@ -86,6 +86,7 @@ RUN apk update && \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-yesarch.tar.xz && \
     rm -f /tmp/s6-overlay-*.tar.xz && \
     mkdir -p /etc/services-available && \
+    mkdir -p /etc/cont-init.d && \
     mv /tmp/99-enable-services.sh /etc/cont-init.d/99-enable-services.sh && \
     chmod 755 /etc/cont-init.d/99-enable-services.sh && \
     # mkdir -p /etc/services.d/99-enable-services  && \
