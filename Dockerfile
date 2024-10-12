@@ -176,8 +176,8 @@ RUN mkdir -p /etc/services-available/caddy && \
     mv /tmp/caddy_run.sh /etc/services-available/caddy/run && \
     chmod +x /etc/services-available/caddy/run && \
     if [ -f "/etc/cont-init.d/99-enable-services.sh" ]; then \
-        echo '"${ENABLE_CADDY}" "caddy" "Caddy reverse proxy"' >> /etc/cont-init.d/99-enable-services.sh \
-    fi ; 
+        echo '"${ENABLE_CADDY}" "caddy" "Caddy reverse proxy"' >> /etc/cont-init.d/99-enable-services.sh ; \
+    fi
 
 # Things to copy to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 ENV CADDY_VERSION v${CADDY_VERSION}
