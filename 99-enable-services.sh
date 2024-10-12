@@ -28,6 +28,3 @@ if [ "${ENABLE_CADDY_LOWER}" == "true" ]; then
     ln -s /etc/services-available/caddy /etc/services.d/caddy
   fi
 fi
-
-
-s6-svscanctl -a /etc/services.d

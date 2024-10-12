@@ -63,7 +63,7 @@ ADD ${S6_URL_ROOT}/s6-overlay-armhf.tar.xz             /tmp/s6-overlay-yesarch-a
 
 # copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY 99-enable-services.sh /tmp/99-enable-services.sh
-COPY 99-enable-services_run /tmp/99-enable-services_run
+# COPY 99-enable-services_run /tmp/99-enable-services_run
 
 # integrate the files into the file system
 RUN apk update && \
@@ -86,11 +86,11 @@ RUN apk update && \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-yesarch.tar.xz && \
     rm -f /tmp/s6-overlay-*.tar.xz && \
     mkdir -p /etc/services-available && \
-    mv /tmp/99-enable-services.sh /etc/services-available/99-enable-services.sh && \
-    chmod 755 /etc/services-available/99-enable-services.sh && \
-    mkdir -p /etc/services.d/99-enable-services  && \
-    mv /tmp/99-enable-services_run /etc/services.d/99-enable-services/run && \
-    chmod 755 /etc/services.d/99-enable-services/run && \
+    mv /tmp/99-enable-services.sh /etc/cont-init.d/99-enable-services.sh && \
+    chmod 755 /etc/cont-init.d/99-enable-services.sh && \
+    # mkdir -p /etc/services.d/99-enable-services  && \
+    # mv /tmp/99-enable-services_run /etc/services.d/99-enable-services/run && \
+    # chmod 755 /etc/services.d/99-enable-services/run && \
     touch /s6_installed.txt \
     ; 
 
