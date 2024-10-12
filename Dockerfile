@@ -176,7 +176,7 @@ RUN set -eux; \
 COPY caddy_run.sh /tmp/caddy_run.sh
 RUN mkdir -p /etc/services-available/caddy && \
     mv /tmp/caddy_run.sh /etc/services-available/caddy/run && \
-    chmod +x /etc/services.d/caddy/run
+    chmod +x /etc/services-available/caddy/run
 
 # Things to copy to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 ENV CADDY_VERSION v${CADDY_VERSION}
