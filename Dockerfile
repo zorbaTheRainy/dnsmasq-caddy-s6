@@ -63,6 +63,7 @@ ADD ${S6_URL_ROOT}/s6-overlay-armhf.tar.xz             /tmp/s6-overlay-yesarch-a
 
 # copy over files that run scripts  NOTE:  do NOT forget to chmod 755 them in the git folder (or they won't be executable in the image)
 COPY 99-enable-services.sh /tmp/99-enable-services.sh
+COPY 99-enable-services_run /tmp/99-enable-services_run
 
 # integrate the files into the file system
 RUN apk update && \
@@ -83,10 +84,12 @@ RUN apk update && \
     tar -C / -Jxpf /tmp/s6-overlay-yesarch.tar.xz && \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz && \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-yesarch.tar.xz && \
-    rm -rf /tmp/s6-overlay-*.tar.xz && \
+    rm -f /tmp/s6-overlay-*.tar.xz && \
     mkdir -p /etc/services-available && \
+    mv /tmp/99-enable-services.sh /etc/services-available/99-enable-services.sh && \
+    chmod 755 /etc/services-available/99-enable-services.sh && \
     mkdir -p /etc/services.d/99-enable-services  && \
-    mv /tmp/99-enable-services.sh /etc/services.d/99-enable-services/run && \
+    mv /tmp/99-enable-services_run /etc/services.d/99-enable-services/run && \
     chmod 755 /etc/services.d/99-enable-services/run && \
     touch /s6_installed.txt \
     ; 
@@ -138,7 +141,7 @@ RUN if [ "${INCLUDE_DNSMASQ_WEBPROC}" = "true" ]; then \
         ; \
     fi
 
-# Things to copy to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
+# Things to copy this to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 EXPOSE 53/udp 8080
 # ENTRYPOINT ["webproc","--configuration-file","/etc/dnsmasq.conf","--","dnsmasq","--no-daemon"]
 
@@ -173,11 +176,10 @@ RUN set -eux; \
 COPY caddy_run.sh /tmp/caddy_run.sh
 RUN mkdir -p /etc/services-available/caddy && \
     mv /tmp/caddy_run.sh /etc/services-available/caddy/run && \
-    chmod +x /etc/services-available/caddy/run
+    chmod +x /etc/services.d/caddy/run
 
 # Things to copy to any Stage 2: Final image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 ENV CADDY_VERSION v${CADDY_VERSION}
-# See https://caddyserver.com/docs/conventions#file-locations for details
 ENV XDG_CONFIG_HOME /configuration
 ENV XDG_DATA_HOME /data
 EXPOSE 80
@@ -195,7 +197,7 @@ FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs_stage / /
 
-# enablement variables
+# enable variables
 ENV ENABLE_DNSMASQ true
 ENV ENABLE_CADDY false
 

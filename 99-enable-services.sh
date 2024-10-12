@@ -6,13 +6,11 @@
 
 echo "Enable: ${ENABLE_CADDY}"
 
-# Check if ENABLE_CADDY is 1 or true (case insensitive)
-if [ "${ENABLE_CADDY}" -eq 1 ] || [ "${ENABLE_CADDY}" -eq 0 ] 2>/dev/null; then
-  if [ "${ENABLE_CADDY}" -eq 1 ]; then
-    ENABLE_CADDY="true"
-  else
-    ENABLE_CADDY="false"
-  fi
+# convert int to str
+if [ "${ENABLE_CADDY}" -eq 1 ] 2>/dev/null; then
+  ENABLE_CADDY="true"
+elif [ "${ENABLE_CADDY}" -eq 0 ] 2>/dev/null; then
+  ENABLE_CADDY="false"
 fi
 
 # Convert ENABLE_CADDY to lowercase for comparison
@@ -22,7 +20,7 @@ ENABLE_CADDY_LOWER=$(echo "${ENABLE_CADDY}" | tr '[:upper:]' '[:lower:]')
 if [ "${ENABLE_CADDY_LOWER}" == "true" ]; then
   echo '[run] enabling Caddy reverse proxy'
 
-  # Enable nginx as a supervised service
+  # Enable supervised service
   if [ -d /etc/services.d/caddy ]
   then
     echo '[run] Caddy reverse proxy already enabled'
