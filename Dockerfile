@@ -155,8 +155,8 @@ RUN apk update && \
     chmod +x /usr/local/bin/webproc && \
     mkdir -p /etc/default/ && \
     echo -e "ENABLED=1\nIGNORE_RESOLVCONF=yes" > /etc/default/dnsmasq &&\
-    mkdir -p /etc/services.d/dnsmasq && \
-    mv /tmp/dnsmasq_run.sh /etc/services.d/dnsmasq/run \
+    mkdir -p /etc/services-available/dnsmasq && \
+    mv /tmp/dnsmasq_run.sh /etc/services-available/dnsmasq/run \
     ; 
 
 RUN if [ -f "/etc/cont-init.d/99-enable-services.sh" ]; then \
