@@ -6,11 +6,34 @@
     # Tailscale Docker Mod   ->  https://github.com/tailscale-dev/docker-mod
 
 # -------------------------------------------------------------------------------------------------
+# How this works
+# -------------------------------------------------------------------------------------------------
+# This is a Dockerfile for the S6-Overlay which enables Docker mods *and* (importantly) a process manager.
+# Each added service has its own:
+#     * Dockerfile section
+#     * <service>_run file which runs the service and is put under /etc/services-available/<service>/run (eventually symlinked to /etc/services.d/<service>/run)
+#     * an ENABLE_<service> ENV is associated with the service
+# When the Docker container runs:
+#     * a /bin/sh script in /etc/cont-init.d runs (in S6 stage 2.i) as soon as the container runs
+#     * the /bin/sh script creates the symlinks to /etc/services.d/ based on the ENV
+#     * S6 (in stage 2.iii) runs any scripts in /etc/services.d/  (We are not using the new S6 stage 2.ii more complex method)
+# See "Init Stages" of the S6 Overlay (https://github.com/just-containers/s6-overlay#init-stages)
+# 
+# TODO:
+#   * there is a Docker feature where you can turn the filesystem to read-only.
+#   * in that case /etc becomes unable to accept the symlinks
+#   * S6 can use /var s6_installed
+#   * and I should move things to there
+#   * https://github.com/just-containers/s6-overlay/issues/267#issuecomment-765613028
+#   * https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
+
+
+# -------------------------------------------------------------------------------------------------
 # Stage 0: Create base image and set ENV/LABELS
 # -------------------------------------------------------------------------------------------------
 
 # set this up to copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
-# NOTE: Docker doesn’t directly substitute environment variables in the --from part of the COPY instruction.  We have to use FROM (and up here not below) to handle this
+# NOTE: Docker doesn’t directly substitute environment variables in the --from part of the COPY instruction.  We have to use FROM to handle this.  And for some reason I couldn't figure out doing these commands down in the Caddy section didn't work.
 ARG CADDY_VERSION=2.8.1
 FROM caddy:${CADDY_VERSION}-alpine AS caddy_donor
 
@@ -150,8 +173,7 @@ EXPOSE 53/udp 8080
 # -------------------------------------------------------------------------------------------------
 
 # Inputs 
-ARG INCLUDE_CADDY=true
-# ARG CADDY_VERSION=2.8.1
+ARG CADDY_VERSION=2.8.1
 LABEL CADDY_VERSION=${CADDY_VERSION}
 
 # All of this is copied (with edits) from the Caddy Dockerfile (https://raw.githubusercontent.com/caddyserver/caddy-docker/refs/heads/master/Dockerfile.tmpl)
@@ -207,6 +229,7 @@ ENV ENABLE_CADDY true
 # Things copied from an old Stage 1: Build image (e.g., ENV, LABEL, EXPOSE, WORKDIR, VOLUME, CMD)
 ARG S6_OVERLAY_VERSION=3.2.0.0
 LABEL S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION}
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=1
 ARG WEBPROC_VERSION=0.4.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
 EXPOSE 53/udp 8080
@@ -215,9 +238,7 @@ LABEL CADDY_VERSION=${CADDY_VERSION}
 ENV CADDY_VERSION v${CADDY_VERSION}
 ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
-EXPOSE 80
-EXPOSE 443
-EXPOSE 443/udp
+EXPOSE 80 443 443/udp
 EXPOSE 2019
 
 # Run the desired programs
