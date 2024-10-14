@@ -26,6 +26,7 @@
 #   * and I should move things to there
 #   * https://github.com/just-containers/s6-overlay/issues/267#issuecomment-765613028
 #   * https://github.com/just-containers/s6-overlay#customizing-s6-overlay-behaviour
+#   * OK!!!, I have just given up on the whole read-only fs thing.  
 
 
 # -------------------------------------------------------------------------------------------------
@@ -113,7 +114,6 @@ RUN apk update && \
     mkdir -p /etc/cont-init.d && \
     mv /tmp/99-enable-services.sh /etc/cont-init.d/99-enable-services.sh && \
     chmod 755 /etc/cont-init.d/99-enable-services.sh && \
-    ln -s /run /var/run \
     ; 
 
     # -------------------------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ RUN apk update && \
     ; 
 
 RUN if [ -f "/etc/cont-init.d/99-enable-services.sh" ]; then \
-        echo 'enable_service "${ENABLE_DNSMASQ}" "dnsmasq" "DNSmasq with WebProc"' >> /etc/cont-init.d/99-enable-services.sh ; \
+        echo 'enable_service "${ENABLE_DNSMASQ}" "dnsmasq" "DNSmasq with Webproc"' >> /etc/cont-init.d/99-enable-services.sh ; \
     fi
 
 
@@ -231,9 +231,11 @@ ENV ENABLE_CADDY true
 ARG S6_OVERLAY_VERSION=3.2.0.0
 LABEL S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION}
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=1
+
 ARG WEBPROC_VERSION=0.4.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
 EXPOSE 53/udp 8080
+
 ARG CADDY_VERSION=2.8.1
 LABEL CADDY_VERSION=${CADDY_VERSION}
 ENV CADDY_VERSION v${CADDY_VERSION}
