@@ -113,7 +113,7 @@ RUN apk update && \
     mkdir -p /etc/services-available && \
     mkdir -p /etc/cont-init.d && \
     mv /tmp/99-enable-services.sh /etc/cont-init.d/99-enable-services.sh && \
-    chmod 755 /etc/cont-init.d/99-enable-services.sh && \
+    chmod 755 /etc/cont-init.d/99-enable-services.sh  \
     ; 
 
     # -------------------------------------------------------------------------------------------------
