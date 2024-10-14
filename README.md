@@ -28,8 +28,8 @@ I wanted a single image to handle all 3 services. I need to be able to disable e
 
 Now, the "stack" of services is much more stable. Everything that needs to share a networking namespace does so automatically.
 
-dnsmasq & caddy are built into the Docker image
-Tailscale can be added as a docker mod ([blog post](https://tailscale.dev/blog/docker-mod-tailscale), [GitHub](https://github.com/tailscale-dev/docker-mod)).
+* dnsmasq & caddy are built into the Docker image
+* Tailscale can be added as a docker mod ([blog post](https://tailscale.dev/blog/docker-mod-tailscale), [GitHub](https://github.com/tailscale-dev/docker-mod)).
 
 I assume at some point I may add versions with other DNS and reverse proxies aside from Caddy.
 
@@ -109,9 +109,7 @@ myhost.company has address 10.0.0.2
 ### caddy
 
 1. Create a [`/etc/caddy/Caddyfile`](https://caddyserver.com/docs/caddyfile) file on the Docker host.
-
-2. Go to [Download Caddy](https://caddyserver.com/download) and create whatever non-vanilla version of `caddy` you wish to use.  Save it to the host.
-
+2. Go to [Download Caddy](https://caddyserver.com/download) and create whatever non-vanilla version of `caddy` you wish to use. Save it to the host.
 3. Run the container
 
 ```
@@ -153,30 +151,30 @@ services:
 The Docker mod exposes a bunch of environment variables that you can
 use to configure it.
 
-| Environment Variable   | Description                                                                                                                                                                                                                                                                                                   | Example                                  |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------- |
-| `DOCKER_MODS`          | The list of additional mods to layer on top of the running container, separated by pipes.                                                                                                                                                                                                                     | `ghcr.io/tailscale-dev/docker-mod:main`  |
-| `TAILSCALE_STATE_DIR`  | The directory where the Tailscale state will be stored, this should be pointed to a Docker volume. If it is not, then the node will set itself as ephemeral, making the node disappear from your tailnet when the container exits.                                                                            | `/var/lib/tailscale`                     |
-| `TAILSCALE_AUTHKEY`    | The authkey for your tailnet. You can create one in the [admin panel](https://login.tailscale.com/admin/settings/keys). See [here](https://tailscale.com/kb/1085/auth-keys/) for more information about authkeys and what you can do with them.                                                               | `tskey-auth-hunter2CNTRL-hunter2hunter2` |
-| `TAILSCALE_HOSTNAME`   | The hostname that you want to set for the container. If you don't set this, the hostname of the node on your tailnet will be a bunch of random hexadecimal numbers, which many humans find hard to remember.                                                                                                  | `wiki`                                   |
-| `TAILSCALE_USE_SSH`    | Set this to `1` to enable SSH access to the container.                                                                                                                                                                                                                                                        | `1`                                      |
-| `TAILSCALE_SERVE_PORT` | The port number that you want to expose on your tailnet. This will be the port of your DokuWiki, Transmission, or other container.                                                                                                                                                                            | `80`                                     |
-| `TAILSCALE_SERVE_MODE` | The mode you want to run Tailscale serving in. This should be `https` in most cases, but there may be times when you need to enable `tls-terminated-tcp` to deal with some weird edge cases like HTTP long-poll connections. See [here](https://tailscale.com/kb/1242/tailscale-serve/) for more information. | `https`                                  |
-| `TAILSCALE_FUNNEL`     | Set this to `true`, `1`, or `t` to enable [funnel](https://tailscale.com/kb/1243/funnel/). For more information about the accepted syntax, please read the [strconv.ParseBool documentation](https://pkg.go.dev/strconv#ParseBool) in the Go standard library.                                                | `on`                                     |
-| `TAILSCALE_LOGIN_SERVER` | Set this value if you are using a custom login/control server (Such as headscale) | `https://headscale.example.com`
+| Environment Variable | Description | Example |
+| :------------------- | :---------- | :------ |
+| `DOCKER_MODS` | The list of additional mods to layer on top of the running container, separated by pipes. | `ghcr.io/tailscale-dev/docker-mod:main` |
+| `TAILSCALE_STATE_DIR` | The directory where the Tailscale state will be stored, this should be pointed to a Docker volume. If it is not, then the node will set itself as ephemeral, making the node disappear from your tailnet when the container exits. | `/var/lib/tailscale` |
+| `TAILSCALE_AUTHKEY` | The authkey for your tailnet. You can create one in the [admin panel](https://login.tailscale.com/admin/settings/keys). See [here](https://tailscale.com/kb/1085/auth-keys/) for more information about authkeys and what you can do with them. | `tskey-auth-hunter2CNTRL-hunter2hunter2` |
+| `TAILSCALE_HOSTNAME` | The hostname that you want to set for the container. If you don't set this, the hostname of the node on your tailnet will be a bunch of random hexadecimal numbers, which many humans find hard to remember. | `wiki` |
+| `TAILSCALE_USE_SSH` | Set this to `1` to enable SSH access to the container. | `1` |
+| `TAILSCALE_SERVE_PORT` | The port number that you want to expose on your tailnet. This will be the port of your DokuWiki, Transmission, or other container. | `80` |
+| `TAILSCALE_SERVE_MODE` | The mode you want to run Tailscale serving in. This should be `https` in most cases, but there may be times when you need to enable `tls-terminated-tcp` to deal with some weird edge cases like HTTP long-poll connections. See [here](https://tailscale.com/kb/1242/tailscale-serve/) for more information. | `https` |
+| `TAILSCALE_FUNNEL` | Set this to `true`, `1`, or `t` to enable [funnel](https://tailscale.com/kb/1243/funnel/). For more information about the accepted syntax, please read the [strconv.ParseBool documentation](https://pkg.go.dev/strconv#ParseBool) in the Go standard library. | `on` |
+| `TAILSCALE_LOGIN_SERVER` | Set this value if you are using a custom login/control server (Such as headscale) | `https://headscale.example.com` |
 
 Something important to keep in mind is that you really should set up a
 separate volume for Tailscale state. Here is how to do that with the
 docker commandline:
 
-```sh
+``` sh
 docker volume create dokuwiki-tailscale
 ```
 
 Then you can mount it into a container by using the volume name
 instead of a host path:
 
-```bash
+``` bash
 docker run \
   ... \
   -v dokuwiki-tailscale:/var/lib/tailscale \
@@ -186,24 +184,31 @@ docker run \
 ### All together as one container
 
 1. Create a [`/etc/dnsmasq.conf`](http://oss.segetech.com/intra/srv/dnsmasq.conf) file on the Docker host.
+2. Create a [`/etc/caddy/Caddyfile`](https://caddyserver.com/docs/caddyfile) file on the Docker host.
+3. Go to [Download Caddy](https://caddyserver.com/download) and create whatever non-vanilla version of `caddy` you wish to use. Save it to the host.
+4. Remember to include the ENV variables to enable/disable the services.
+| Environment Variable | Description | Defaulr |
+| :------------------- | :---------- | :------ |
+| ENABLE_DNS | Runs dnsmasq & webproc | true |
+| ENABLE_CADDY | Runs caddy | true |
 
-1. Create a [`/etc/caddy/Caddyfile`](https://caddyserver.com/docs/caddyfile) file on the Docker host.
+* `true` values are 1 or 'true' (case insensative).
+* `false` values are anything else.
 
-2. Go to [Download Caddy](https://caddyserver.com/download) and create whatever non-vanilla version of `caddy` you wish to use.  Save it to the host.
+4. Run the container
 
-3. Run the container
 ```
 blah
 ```
 
 ## Other stuff
 
-
 #### DockerHub tags
 
 At the moment, tags on DockerHub track either:
-- the Caddy release number upon which this image is built, or
-- for test images, the build time (UTC).
+
+* the Caddy release number upon which this image is built, or
+* for test images, the build time (UTC).
 
 I assume as I tinker with this more the tags will change.
 
