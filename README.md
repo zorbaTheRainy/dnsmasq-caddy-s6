@@ -187,10 +187,13 @@ docker run \
 2. Create a [`/etc/caddy/Caddyfile`](https://caddyserver.com/docs/caddyfile) file on the Docker host.
 3. Go to [Download Caddy](https://caddyserver.com/download) and create whatever non-vanilla version of `caddy` you wish to use. Save it to the host.
 4. Remember to include the ENV variables to enable/disable the services.
-| Environment Variable | Description | Defaulr |
+
+| Environment Variable | Description | Default |
 | :------------------- | :---------- | :------ |
 | ENABLE_DNS | Runs dnsmasq & webproc | true |
 | ENABLE_CADDY | Runs caddy | true |
+
+Tailscale docker-mod is enabled (or not via the [docker-mod mechanism](https://github.com/linuxserver/docker-mods))
 
 * `true` values are 1 or 'true' (case insensative).
 * `false` values are anything else.
