@@ -190,12 +190,12 @@ docker run \
 
 | Environment Variable | Description | Default |
 | :------------------- | :---------- | :------ |
-| ENABLE_DNS | Runs dnsmasq & webproc | true |
+| ENABLE_DNSMASQ | Runs dnsmasq & webproc | true |
 | ENABLE_CADDY | Runs caddy | true |
 
-Tailscale docker-mod is enabled (or not via the [docker-mod mechanism](https://github.com/linuxserver/docker-mods))
+Tailscale docker-mod is enabled (or not) via the [docker-mod mechanism](https://github.com/linuxserver/docker-mods)
 
-* `true` values are 1 or 'true' (case insensative).
+* `true` values are 1 or 'true' (case insensitive).
 * `false` values are anything else.
 
 4. Run the container
@@ -211,7 +211,7 @@ blah
 At the moment, tags on DockerHub track either:
 
 * the Caddy release number upon which this image is built, or
-* for test images, the build time (UTC).
+* for testing images, the build time (UTC).
 
 I assume as I tinker with this more the tags will change.
 
