@@ -39,7 +39,7 @@ ARG CADDY_VERSION=2.8.1
 FROM caddy:${CADDY_VERSION}-alpine AS caddy_donor
 
 # I also need a donor from a linuxserver.io image
-FROM lscr.io/linuxserver/baseimage-alpine AS linuxserver_donor
+FROM lscr.io/linuxserver/baseimage-alpine:3.20-2a6ecb14-ls14 AS linuxserver_donor
 
 # set our actual BASE_IMAGE
 FROM alpine:latest AS base
