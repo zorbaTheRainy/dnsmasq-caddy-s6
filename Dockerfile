@@ -277,6 +277,7 @@ EXPOSE 2019
 FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs_stage / /
+COPY .bashrc /root/.bashrc
 
 ADD https://github.com/linuxserver/docker-baseimage-alpine/archive/refs/tags/3.20-2a6ecb14-ls14.tar.gz /tmp/3.20-2a6ecb14-ls14.tar.gz 
 RUN tar -C /tmp -xzvf /tmp/3.20-2a6ecb14-ls14.tar.gz && \
