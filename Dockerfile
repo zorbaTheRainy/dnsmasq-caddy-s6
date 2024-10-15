@@ -1,9 +1,10 @@
 # Define the build argument (can be basic alpine for just dnsmasq/webproc,  or also caddy-alpine; tailscale can be added as S6 docker mod)
-    # Alpine docker image    ->  https://hub.docker.com/_/alpine
-    # S6 Overlay             ->  https://github.com/just-containers/s6-overlay
-    # dnsmasq/webproc docker ->  https://github.com/jpillora/docker-dnsmasq
-    # Caddy docker image     ->  https://hub.docker.com/_/caddy
-    # Tailscale Docker Mod   ->  https://github.com/tailscale-dev/docker-mod
+    # Alpine docker image      ->  https://hub.docker.com/_/alpine
+    # S6 Overlay               ->  https://github.com/just-containers/s6-overlay
+    # LinuxServer.io BaseImage ->  https://github.com/linuxserver/docker-baseimage-alpine
+    # dnsmasq/webproc docker   ->  https://github.com/jpillora/docker-dnsmasq
+    # Caddy docker image       ->  https://hub.docker.com/_/caddy
+    # Tailscale Docker Mod     ->  https://github.com/tailscale-dev/docker-mod
 
 # -------------------------------------------------------------------------------------------------
 # How this works
@@ -53,7 +54,7 @@ ARG BUILD_TIME
 
 # Add labels to the image metadata
 LABEL release-date=${BUILD_TIME}
-LABEL source="https://github.com/zorbaTheRainy/docker-dnsmasq"
+LABEL source="https://github.com/zorbaTheRainy/dnsmasq-caddy-s6"
 
 # -------------------------------------------------------------------------------------------------
 # Stage 1: Build image
@@ -69,7 +70,8 @@ ARG TARGETVARIANT
     # -------------------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------------------
-    # S6 Overlay           ->  https://github.com/just-containers/s6-overlay
+    # S6 Overlay               ->  https://github.com/just-containers/s6-overlay
+    # LinuxServer.io BaseImage ->  https://github.com/linuxserver/docker-baseimage-alpine
 # -------------------------------------------------------------------------------------------------
 
 # Inputs 
@@ -119,10 +121,12 @@ RUN apk update && \
     chmod 755 /etc/cont-init.d/99-enable-services.sh  \
     ; 
 
+# S6_Overlay is just the process manager.  We need to add the docker-mod scripts from LinuxServer.io
 # from https://github.com/linuxserver/docker-baseimage-alpine/blob/master/Dockerfile
 ARG MODS_VERSION="v3"
 ARG PKG_INST_VERSION="v1"
 ARG LSIOWN_VERSION="v1"
+ARG LSIO_RELEASE_VERSION="3.20-2a6ecb14-ls14"
     
 ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/docker-mods.${MODS_VERSION}" "/docker-mods"
 ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/package-install.${PKG_INST_VERSION}" "/etc/s6-overlay/s6-rc.d/init-mods-package-install/run"
@@ -167,9 +171,10 @@ RUN \
     /tmp/*
 
 # copy files from the official LinuxServices.io Alpine image's GitHub
-ADD https://github.com/linuxserver/docker-baseimage-alpine/archive/refs/tags/3.20-2a6ecb14-ls14.tar.gz /tmp/3.20-2a6ecb14-ls14.tar.gz 
-RUN tar -C /tmp -xzvf /tmp/3.20-2a6ecb14-ls14.tar.gz && \
-    cp -a /tmp/docker-baseimage-alpine-3.20-2a6ecb14-ls14/root/etc/s6-overlay/s6-rc.d /etc/s6-overlay/
+ADD https://github.com/linuxserver/docker-baseimage-alpine/archive/refs/tags/${LSIO_RELEASE_VERSION}.tar.gz /tmp/${LSIO_RELEASE_VERSION}.tar.gz 
+RUN tar -C /tmp -xzvf /tmp/${LSIO_RELEASE_VERSION}.tar.gz && \
+    cp -a /tmp/docker-baseimage-alpine-${LSIO_RELEASE_VERSION}/root/etc/s6-overlay/s6-rc.d /etc/s6-overlay/ && \
+    rm -rf /tmp/*
 
     # -------------------------------------------------------------------------------------------------
     # dnsmasq/webproc docker ->  https://github.com/jpillora/docker-dnsmasq
