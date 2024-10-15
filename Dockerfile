@@ -39,7 +39,7 @@ ARG CADDY_VERSION=2.8.1
 FROM caddy:${CADDY_VERSION}-alpine AS caddy_donor
 
 # I also need a donor from a linuxserver.io image
-FROM lscr.io/linuxserver/baseimage-alpine:3.20-2a6ecb14-ls14 AS linuxserver_donor
+# FROM lscr.io/linuxserver/baseimage-alpine:3.20-2a6ecb14-ls14 AS linuxserver_donor
 
 # set our actual BASE_IMAGE
 FROM alpine:latest AS base
@@ -167,8 +167,10 @@ RUN \
     /tmp/*
 
 # copy files from the official Caddy image ( saves us worrying about the ${CADDY_VERSION} or ${TARGETARCH} )
-COPY --from=linuxserver_donor /etc/s6-overlay/s6-rc.d /etc/s6-overlay/s6-rc.d
-
+# COPY --from=linuxserver_donor /etc/s6-overlay/s6-rc.d /etc/s6-overlay/s6-rc.d
+ADD https://github.com/linuxserver/docker-baseimage-alpine/archive/refs/tags/3.20-2a6ecb14-ls14.tar.gz /tmp/3.20-2a6ecb14-ls14.tar.gz 
+RUN tar -C /tmp -xzvf /tmp/3.20-2a6ecb14-ls14.tar.gz 
+RUN cp -R /tmp/docker-baseimage-alpine-3.20-2a6ecb14-ls14/root/etc/s6-overlay/s6-rc.d /etc/s6-overlay/s6-rc.d
 
     # -------------------------------------------------------------------------------------------------
     # dnsmasq/webproc docker ->  https://github.com/jpillora/docker-dnsmasq
