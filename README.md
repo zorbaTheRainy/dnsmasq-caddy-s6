@@ -31,9 +31,9 @@ Now, the "stack" of services is much more stable. Everything that needs to share
 * dnsmasq & caddy are built into the Docker image
 * Tailscale can be added as a docker mod ([blog post](https://tailscale.dev/blog/docker-mod-tailscale), [GitHub](https://github.com/tailscale-dev/docker-mod)).
 
-I assume at some point I may add versions with other DNS and reverse proxies aside from Caddy.
+I assume at some point I may add versions with other DNS and reverse proxies.
 
-While it is tempting to add in other services (like GoAccess) that I commonly add in the DNS-reverse proxy stack, those services do NOT need (or benefit from) a shared networking namespace. So, I do not think it is the Correct Way to break the Docker Way with them.
+While it is tempting to add in other services (like GoAccess) that I commonly add in the DNS-reverse proxy stack, those services do NOT need (or benefit from) a shared networking namespace (be it Tailscale or a macVLAN). So, I do not think it is the Correct Way to break the Docker Way with them.
 
 Ultimately, the motivation was to put DNS & the reverse proxy into a single Tailscale machine (without a full VM).
 
@@ -77,7 +77,8 @@ services:
     volumes:
       - /docker/dnsmasq//dnsmasq.conf:/etc/dnsmasq.conf
       - /etc/localtime:/etc/localtime:ro
-    # environment:
+    environment:
+      - ENABLE_CADDY:0
      #  HTTP_USER: foo
      #  HTTP_PASS: bar
     cap_add:
@@ -125,6 +126,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
+      - ENABLE_DNSMASQ=0
       - TZ=Europe/Berlin
       # - CADDY_ADMIN=192.168.1.123:2019
     volumes:
@@ -213,7 +215,7 @@ At the moment, tags on DockerHub track either:
 * the Caddy release number upon which this image is built, or
 * for testing images, the build time (UTC).
 
-I assume as I tinker with this more the tags will change.
+I assume, as I tinker with this more, the tags will change.
 
 #### MIT License
 

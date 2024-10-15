@@ -116,6 +116,53 @@ RUN apk update && \
     chmod 755 /etc/cont-init.d/99-enable-services.sh  \
     ; 
 
+# from https://github.com/linuxserver/docker-baseimage-alpine/blob/master/Dockerfile
+ARG MODS_VERSION="v3"
+ARG PKG_INST_VERSION="v1"
+ARG LSIOWN_VERSION="v1"
+    
+ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/docker-mods.${MODS_VERSION}" "/docker-mods"
+ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/package-install.${PKG_INST_VERSION}" "/etc/s6-overlay/s6-rc.d/init-mods-package-install/run"
+ADD --chmod=755 "https://raw.githubusercontent.com/linuxserver/docker-mods/mod-scripts/lsiown.${LSIOWN_VERSION}" "/usr/bin/lsiown"
+
+# environment variables
+ENV PS1="$(whoami)@$(hostname):$(pwd)\\$ " \
+  HOME="/root" \
+  TERM="xterm" \
+  S6_CMD_WAIT_FOR_SERVICES_MAXTIME="0" \
+  S6_VERBOSITY=1 \
+  S6_STAGE2_HOOK=/docker-mods \
+  VIRTUAL_ENV=/lsiopy \
+  PATH="/lsiopy/bin:$PATH"
+
+RUN \
+  echo "**** install runtime packages ****" && \
+  apk add --no-cache \
+    alpine-release \
+    bash \
+    ca-certificates \
+    catatonit \
+    coreutils \
+    curl \
+    findutils \
+    jq \
+    netcat-openbsd \
+    procps-ng \
+    shadow \
+    tzdata && \
+  echo "**** create abc user and make our folders ****" && \
+  groupmod -g 1000 users && \
+  useradd -u 911 -U -d /config -s /bin/false abc && \
+  usermod -G users abc && \
+  mkdir -p \
+    /app \
+    /config \
+    /defaults \
+    /lsiopy && \
+  echo "**** cleanup ****" && \
+  rm -rf \
+    /tmp/*
+
     # -------------------------------------------------------------------------------------------------
     # dnsmasq/webproc docker ->  https://github.com/jpillora/docker-dnsmasq
 # -------------------------------------------------------------------------------------------------
@@ -231,6 +278,17 @@ ENV ENABLE_CADDY true
 ARG S6_OVERLAY_VERSION=3.2.0.0
 LABEL S6_OVERLAY_VERSION=${S6_OVERLAY_VERSION}
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=1
+ARG MODS_VERSION="v3"
+ARG PKG_INST_VERSION="v1"
+ARG LSIOWN_VERSION="v1"
+ENV PS1="$(whoami)@$(hostname):$(pwd)\\$ " \
+  HOME="/root" \
+  TERM="xterm" \
+  S6_CMD_WAIT_FOR_SERVICES_MAXTIME="0" \
+  S6_VERBOSITY=1 \
+  S6_STAGE2_HOOK=/docker-mods \
+  VIRTUAL_ENV=/lsiopy \
+  PATH="/lsiopy/bin:$PATH"
 
 ARG WEBPROC_VERSION=0.4.0
 LABEL WEBPROC_VERSION=${WEBPROC_VERSION}
