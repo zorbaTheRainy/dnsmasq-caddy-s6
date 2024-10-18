@@ -39,9 +39,6 @@
 ARG CADDY_VERSION=2.8.1
 FROM caddy:${CADDY_VERSION}-alpine AS caddy_donor
 
-# I also need a donor from a linuxserver.io image
-# FROM lscr.io/linuxserver/baseimage-alpine:3.20-2a6ecb14-ls14 AS linuxserver_donor
-
 # set our actual BASE_IMAGE
 FROM alpine:latest AS base
 
@@ -171,6 +168,8 @@ RUN \
     /tmp/*
 
 # copy files from the official LinuxServices.io Alpine image's GitHub
+# as tempting as it is to pull the directory off a base-image or more accurately to use their base-image as my base-image, LSIO only builds for AMD64 and ARM64
+# ghcr.io/linuxserver/baseimage-alpine:3.20
 ADD https://github.com/linuxserver/docker-baseimage-alpine/archive/refs/tags/${LSIO_RELEASE_VERSION}.tar.gz /tmp/${LSIO_RELEASE_VERSION}.tar.gz 
 RUN tar -C /tmp -xzvf /tmp/${LSIO_RELEASE_VERSION}.tar.gz && \
     cp -a /tmp/docker-baseimage-alpine-${LSIO_RELEASE_VERSION}/root/etc/s6-overlay/s6-rc.d /etc/s6-overlay/ && \

@@ -203,7 +203,87 @@ Tailscale docker-mod is enabled (or not) via the [docker-mod mechanism](https://
 4. Run the container
 
 ```
-blah
+version: "2.4"
+
+# ###################################################################
+# ENV  ${DIR_ROOT}
+# ENV  ${CPU_ARCH}
+# ENV  ${CLOUDFLARE_API_TOKEN}
+# ENV  ${TAILSCALE_KEY}
+# ENV  ${TAILSCALE_HOSTNAME}
+# ###################################################################
+
+# ###################################################################
+# NETWORKS
+# ###################################################################
+networks:
+  dns_tail_network:
+    name: dns_tail_network
+
+# ###################################################################
+# SERVICES
+# ###################################################################
+services:
+  dns_tail_combo:
+    image: 'zorbatherainy/dnsmasq:latest'
+    container_name: dns_tail_combo
+    hostname: ${TAILSCALE_HOSTNAME}
+    environment:
+      # Enablement ENVs
+      # --------------------------------------------
+      - ENABLE_DNSMASQ=1
+      - ENABLE_CADDY=1
+      # Tailscale Docker mod
+      # --------------------------------------------
+        # a fork that works better sometimes
+      # - DOCKER_MODS=chukysoria/docker-mod:main
+        # the official version
+      - DOCKER_MODS=ghcr.io/tailscale-dev/docker-mod:main
+      - TAILSCALE_AUTHKEY=${TAILSCALE_KEY}
+      - TAILSCALE_HOSTNAME=${TAILSCALE_HOSTNAME}
+      - TAILSCALE_USE_SSH=1
+      - TAILSCALE_STATE_DIR=/var/lib/tailscale
+      # caddy 
+      # --------------------------------------------
+      # passthrough ENV Vars (for Caddyfile)
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro    # sync to host time
+      # Tailscale Docker mod
+      # --------------------------------------------
+      - tailscale_state:/var/lib/tailscale
+      # dnsmasq
+      # --------------------------------------------
+      - ${DIR_ROOT}/dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
+      # caddy
+      # --------------------------------------------
+      # config files
+      - ${DIR_ROOT}/caddy/caddy_linux_${CPU_ARCH}_custom:/usr/bin/caddy # from https://caddyserver.com/download
+      - ${DIR_ROOT}/caddy/Caddyfile:/etc/caddy/Caddyfile
+      # directories
+      - caddy_config:/config
+      - caddy_data:/data
+      - ${DIR_ROOT}/caddy/logs:/logs
+      - ${DIR_ROOT}/caddy/site:/srv
+    privileged: true
+    cap_add:
+      - net_admin
+      - sys_module
+    restart: unless-stopped
+    # ports may or may not be used, depending on macvlan, tailscale-only, etc.
+    # ports:  
+      # - 53:53
+    networks:
+      dns_tail_network:
+
+
+# ###################################################################
+# VOLUMES
+# ###################################################################
+volumes:
+  tailscale_state:
+  caddy_config:
+  caddy_data:
 ```
 
 ## Other stuff
