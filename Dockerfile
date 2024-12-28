@@ -62,6 +62,11 @@ FROM base AS rootfs_stage
 ARG TARGETARCH
 ARG TARGETVARIANT
 
+# add any user desired packages
+RUN apk update && \
+    apk add --no-cache bash nano \
+    ;
+
     # -------------------------------------------------------------------------------------------------
     # Services
     # -------------------------------------------------------------------------------------------------
