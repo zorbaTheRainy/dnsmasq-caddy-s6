@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image CI (dnsmasq)
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        dockerfile: Dockerfile-dnsmasq # Use Dockerfile-dnsmasq instead of the default Dockerfile 
+        file: Dockerfile-dnsmasq # Use Dockerfile-dnsmasq instead of the default Dockerfile 
         push: true
         # platforms: linux/amd64
         # platforms: linux/amd64,linux/arm64
