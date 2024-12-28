@@ -198,7 +198,7 @@ COPY dnsmasq_run.sh /tmp/dnsmasq_run.sh
 # integrate the files into the file system
 # fetch dnsmasq and webproc binary
 RUN apk update && \
-    apk --no-cache add dnsmasq && \
+    apk --no-cache add dnsmasq-dnssec && \
     case "${TARGETARCH}" in \
         amd64)  gzip -d -c /tmp/webproc_amd64.gz > /usr/local/bin/webproc   ;; \
         arm64)  gzip -d -c /tmp/webproc_arm64.gz > /usr/local/bin/webproc   ;; \
@@ -282,6 +282,7 @@ FROM base
 # Copy the entire filesystem from the builder stage
 COPY --from=rootfs_stage / /
 COPY .bashrc /root/.bashrc
+COPY .profile /root/.profile
 
 # enable variables
 ENV ENABLE_DNSMASQ true
